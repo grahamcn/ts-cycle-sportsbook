@@ -96,7 +96,7 @@ function SideMenu(sources: Sources): Sinks {
 
 	const listSinks = isolate(SimpleMenuList, { onion: simpleMenuListLens })(sources) // list idetifies the part of state of loop over
 	const listSinksDOM$: Stream<Array<VNode>> = listSinks.DOM
-	const listSinksHistory$: Stream<string | {}> = listSinks.History
+	const listSinksHistory$: Stream<string> = listSinks.History
 
 	// one grouped menu, todo
 	const groupedMenusLens = {
@@ -115,7 +115,6 @@ function SideMenu(sources: Sources): Sinks {
 		xs.combine(
 			listSinksDOM$,
 			menuGroupSinksDom$,
-			// menusSinksDom$,
 		).map(([listSinksDOM, menuGroupSinksDom]) =>
 			div('.menu', [
 				ul('.menu__list', [
