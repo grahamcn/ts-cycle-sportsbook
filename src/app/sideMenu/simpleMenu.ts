@@ -2,9 +2,9 @@ import { li, h4, a, ul, VNode, DOMSource } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
-import { Menu } from './sideMenu.interfaces'
-import { getTargetDataUrl } from './misc/helpers'
-import { renderMenuItems } from './misc/helpers.dom'
+import { Menu } from '../interfaces/interface.menu'
+import { getTargetDataUrl } from '../misc/helpers'
+import { renderMenuItems } from '../misc/helpers.dom'
 
 interface State extends Menu { }
 

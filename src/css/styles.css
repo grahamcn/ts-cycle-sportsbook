@@ -99,8 +99,14 @@ html {
   padding: 6px;
 }
 
-/* Menu */
+/* Sportsbook */
+.sportsbook {
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+}
 
+/* Menu */
 .menu {
 	width: 300px;
 	min-width: 300px;

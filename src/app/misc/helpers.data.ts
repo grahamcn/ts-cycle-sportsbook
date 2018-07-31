@@ -1,44 +1,9 @@
-export interface Competition {
-	displayOrder: number
-	id: string
-	liveEvents?: Event[]
-	name: string
-	preLiveEvents?: Event[]
-	urlName: string
-}
-
-export interface Event {
-	id: string
-	name: string
-	status: string
-	live: boolean
-	started: boolean
-	startTime: string
-	displayOrder: number
-	urlName: string,
-	markets: Market[]
-}
-
-export interface Market {
-	id: string
-	name: string
-	minorCode: string
-	status: string
-	inRunning: boolean
-	displayOrder: boolean
-	outcomes: Outcome[]
-}
-
-export interface Outcome {
-	id: string
-	name: string
-	type: string
-	price: number
-	priceDen: number
-	priceNum: number
-	displayOrder: number
-	status: string
-}
+import {
+	Competition,
+	Event,
+	Market,
+	Outcome,
+} from '../interfaces/interface.catalog'
 
 const eventPassThru = ({id, name, urlName}) => ({
 	eventId: id,

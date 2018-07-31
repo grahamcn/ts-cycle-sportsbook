@@ -3,22 +3,22 @@ import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
 
-import { dropRepeats } from './misc/xstream.extra'
+import { dropRepeats } from '../misc/xstream.extra'
 
 import {
 	pick,
 	transformPathToPageDataPath,
 	getPageDataUrl,
-} from './misc/helpers'
+} from '../misc/helpers'
 
 import {
 	flattenPageData,
-} from './misc/helpers.data'
+} from '../misc/helpers.data'
 
 
 import {
 	simpleHttpResponseReplaceError,
-} from './misc/helpers.xs'
+} from '../misc/helpers.xs'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -30,7 +30,7 @@ interface Sources {
 	HTTP: HTTPSource,
 }
 
-function Sport(sources: Sources): Sinks {
+function Catalog(sources: Sources): Sinks {
 
 	const pageDataRequestsPath$ =
 		sources.History
@@ -85,4 +85,4 @@ function Sport(sources: Sources): Sinks {
 	}
 }
 
-export default Sport
+export default Catalog

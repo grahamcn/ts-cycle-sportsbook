@@ -4,22 +4,22 @@ import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { StateSource, Reducer, makeCollection } from 'cycle-onionify'
 import isolate from '@cycle/isolate'
-import { dropRepeats } from './misc/xstream.extra'
+import { dropRepeats } from '../misc/xstream.extra'
 
 import {
 	pick,
 	transformPathToSecondaryDataKey,
 	getTertiaryMenuDataUrl,
 	transformToMenuGroups,
-} from './misc/helpers'
+} from '../misc/helpers'
 
 import {
 	simpleHttpResponseReplaceError,
-} from './misc/helpers.xs'
+} from '../misc/helpers.xs'
 
 import GroupedMenus from './groupedMenus'
 import SimpleMenu from './SimpleMenu'
-import { Menu, MenuItem	} from './sideMenu.interfaces'
+import { Menu, MenuItem	} from '../interfaces/interface.menu'
 
 
 interface State extends Array<Menu> { }
