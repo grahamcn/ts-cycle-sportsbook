@@ -1,4 +1,4 @@
-import { div, VNode, h3, span, select } from '@cycle/dom'
+import { div, VNode, h3, span } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 
 interface Sinks {

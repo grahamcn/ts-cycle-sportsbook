@@ -3,7 +3,7 @@ export const baseUrl = 'https://vkyyqd7276.execute-api.eu-west-2.amazonaws.com/p
 // export const baseUrl = 'http://localhost:8000/catalog'
 // export const baseUrl = 'ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000/catalog'
 
-import { MenuItem } from '../sideMenu.interfaces'
+import { MenuItem } from '../interfaces/interface.menu'
 
 export const containerMenuData: MenuItem[] = [{
 	title: 'Home',

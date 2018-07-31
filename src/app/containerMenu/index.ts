@@ -1,9 +1,9 @@
 import xs, { Stream } from 'xstream';
 import { div, VNode, ul, li, a, DOMSource } from '@cycle/dom'
 
-import { containerMenuData } from './misc/constants'
-import { getTargetDataUrl } from './misc/helpers'
-import { MenuItem } from './sideMenu.interfaces'
+import { containerMenuData } from '../misc/constants'
+import { getTargetDataUrl } from '../misc/helpers'
+import { MenuItem } from '../interfaces/interface.menu'
 
 export interface Sources {
 	DOM: DOMSource
