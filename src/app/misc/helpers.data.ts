@@ -3,7 +3,7 @@ import {
 	Event,
 	Market,
 	Outcome,
-} from '../interfaces/interface.catalog'
+} from '../sportsbook/interfaces'
 
 const eventPassThru = ({id, name, urlName}) => ({
 	eventId: id,

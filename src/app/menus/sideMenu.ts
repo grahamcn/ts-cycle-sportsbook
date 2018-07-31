@@ -19,7 +19,7 @@ import {
 
 import GroupedMenus from './groupedMenus'
 import SimpleMenu from './SimpleMenu'
-import { Menu, MenuItem	} from '../interfaces/interface.menu'
+import { Menu, MenuItem	} from './interfaces'
 
 
 interface State extends Array<Menu> { }

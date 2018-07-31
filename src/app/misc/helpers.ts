@@ -4,7 +4,7 @@ import {
 	staticTertiaryMenuItems,
 } from './constants'
 
-import { MenuItem, Menu } from '../interfaces/interface.menu'
+import { MenuItem, Menu } from '../menus/interfaces'
 
 interface PickKey extends Function {
 	(s: Object): string | number | Object // could be others, extend if required

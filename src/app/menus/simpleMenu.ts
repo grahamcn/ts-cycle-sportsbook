@@ -2,7 +2,7 @@ import { li, h4, a, ul, VNode, DOMSource } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
-import { Menu } from '../interfaces/interface.menu'
+import { Menu } from './interfaces'
 import { getTargetDataUrl } from '../misc/helpers'
 import { renderMenuItems } from '../misc/helpers.dom'
 

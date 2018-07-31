@@ -7,19 +7,11 @@ import isolate from '@cycle/isolate'
 
 import '../css/styles.css'
 
-import SideMenu from './sideMenu'
+import SideMenu from './menus/sideMenu'
 import Sportsbook from './sportsbook'
-import ContainerMenu from './containerMenu'
+import ContainerMenu from './menus/containerMenu'
 
-// note to self - folder names for sub applications (every fn/app is runnable standalone in an
-// onionified main) should tie in with state namespace
-interface State {
-	// implied to be
-	// sportsbook
-	// sideMenu (unused)
-	// betslip / selections. betslip contains selections?
-	// account
-}
+interface State {}
 
 interface Sinks {
 	DOM: Stream<VNode>,

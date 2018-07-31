@@ -1,4 +1,4 @@
-import { MenuItem, Menu } from '../interfaces/interface.menu'
+import { MenuItem, Menu } from '../menus/interfaces'
 import { ul, h4, li, a, VNode } from '@cycle/dom'
 
 // render list title, list item function

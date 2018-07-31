@@ -2,7 +2,7 @@ import { VNode, ul, li, div, span, a, html, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
-import { Menu } from '../interfaces/interface.menu'
+import { Menu } from './interfaces'
 import SimpleMenu from './SimpleMenu'
 import isolate from '@cycle/isolate'
 
