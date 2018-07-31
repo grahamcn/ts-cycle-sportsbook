@@ -8,7 +8,7 @@ import { dropRepeats } from '../misc/xstream.extra'
 import {
 	pick,
 	transformPathToPageDataPath,
-	getPageDataUrl,
+	getCatalogDataUrl,
 } from '../misc/helpers'
 
 import {
@@ -32,21 +32,21 @@ interface Sources {
 
 function Catalog(sources: Sources): Sinks {
 
-	const pageDataRequestsPath$ =
+	const catalogDataRequestsPath$ =
 		sources.History
 			.map(pick('pathname'))
 			.map(transformPathToPageDataPath)
 
-	const pageHttp$ =
-		pageDataRequestsPath$
+	const catalogHttpRequest$ =
+		catalogDataRequestsPath$
 			.compose(dropRepeats())
 			.map(path => ({
-				url: getPageDataUrl(path),
+				url: getCatalogDataUrl(path),
 				'category': 'page-data',
 				lazy: true,
 			}))
 
-	const pageData$ =
+	const pageDataResponse$ =
 		sources.HTTP
 			.select('page-data')
 			.map(simpleHttpResponseReplaceError)
@@ -54,12 +54,12 @@ function Catalog(sources: Sources): Sinks {
 			.map(res => res.body)
 
 	const successPageData$ =
-		pageData$
+		pageDataResponse$
 			.filter(data => !data.err)
 			.map(flattenPageData)
 
 	const errorPageData$ =
-		pageData$.filter(data => !!data.err)
+		pageDataResponse$.filter(data => !!data.err)
 
 	const successPageDom$: Stream<VNode> =
 		successPageData$.map(res => div('.sport', JSON.stringify(res)))
@@ -68,7 +68,7 @@ function Catalog(sources: Sources): Sinks {
 		errorPageData$.map(res => div('.sport', res.err.message))
 
 	const loadingDom$: Stream<VNode> =
-		pageDataRequestsPath$
+		catalogDataRequestsPath$ // this emits, we display the loading indicator
 			.compose(dropRepeats())
 			.mapTo(div('.sport', 'loading...'))
 
@@ -81,7 +81,7 @@ function Catalog(sources: Sources): Sinks {
 
 	return {
 		DOM: vdom$,
-		HTTP: pageHttp$,
+		HTTP: catalogHttpRequest$,
 	}
 }
 

@@ -29,7 +29,7 @@ export function getTertiaryMenuDataUrl(key: string, base: string = baseUrl): str
 	return `${base}/${key}/competitions`
 }
 
-export function getPageDataUrl(path: string, base: string = baseUrl): string {
+export function getCatalogDataUrl(path: string, base: string = baseUrl): string {
 	return `${base}${path}/events`
 }
 
