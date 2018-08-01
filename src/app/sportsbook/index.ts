@@ -6,15 +6,15 @@ import isolate from '@cycle/isolate'
 
 import Betslip from './betslip'
 import CatalogComponent from './catalog'
-import { Reducer } from '../../../node_modules/cycle-onionify'
+import { Reducer } from 'cycle-onionify'
 import { Sportsbook } from './interfaces'
 
-interface State extends Sportsbook {}
+interface State extends Sportsbook { }
 
 interface Sinks {
 	DOM: Stream<VNode>,
-  HTTP: Stream<RequestInput>,
-  onion: Stream<Reducer<State>>
+	HTTP: Stream<RequestInput>,
+	onion: Stream<Reducer<State>>
 }
 
 interface Sources {
@@ -27,8 +27,8 @@ function Sportsbook(sources: Sources): Sinks {
 	const catalogSinks = isolate(CatalogComponent, 'catalog')(sources)
 	const betslipSinks = Betslip(sources)
 
-  const sportsbookHttp$ = catalogSinks.HTTP
-  const sportsbookOnion$ = catalogSinks.onion
+	const sportsbookHttp$ = catalogSinks.HTTP
+	const sportsbookOnion$ = catalogSinks.onion
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
@@ -42,8 +42,8 @@ function Sportsbook(sources: Sources): Sinks {
 
 	return {
 		DOM: vdom$,
-    HTTP: sportsbookHttp$,
-    onion: sportsbookOnion$,
+		HTTP: sportsbookHttp$,
+		onion: sportsbookOnion$,
 	}
 }
 

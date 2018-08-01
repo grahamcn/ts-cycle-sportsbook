@@ -97,7 +97,7 @@ export function flattenPageData(pageData) {
 				outcomes: new Map(),
 			})
 
-	console.log('flattenedDataMap')
-	console.log(flattenedDataMap)
+	// console.log('flattenedDataMap')
+	// console.log(flattenedDataMap)
 	return flattenedDataMap
 }
