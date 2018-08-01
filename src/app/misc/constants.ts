@@ -1,6 +1,6 @@
 export const defaultSecondarySegment = 'calcio'
-export const baseUrl = 'https://vkyyqd7276.execute-api.eu-west-2.amazonaws.com/public/catalog'
-// export const baseUrl = 'http://localhost:8000/catalog'
+// export const baseUrl = 'https://vkyyqd7276.execute-api.eu-west-2.amazonaws.com/public/catalog'
+export const baseUrl = 'http://localhost:8000/catalog'
 // export const baseUrl = 'ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000/catalog'
 
 import { MenuItem } from '../menus/interfaces'
@@ -13,7 +13,10 @@ export const containerMenuData: MenuItem[] = [{
 	url: '/calcio'
 }, {
 	title: 'Tennis',
-	url: '/tennis'
+  url: '/tennis'
+}, {
+	title: 'Rugby',
+	url: '/rugby'
 }, {
 	title: 'Rollerball',
 	url: '/rollerball'

@@ -99,3 +99,10 @@ export function flattenPageData(pageData) {
 
 	return flattenedDataMap
 }
+
+export const initialCatalogState = {
+  competitions: new Map(),
+  events: new Map(),
+  markets: new Map(),
+  outcomes: new Map(),
+}

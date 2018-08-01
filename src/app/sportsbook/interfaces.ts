@@ -1,3 +1,8 @@
+export interface Sportsbook {
+  catalog: Catalog
+  basket: Selection[]
+}
+
 export interface Catalog {
 	competitions: Map<string, Competition>
 	events: Map<string, Event>
