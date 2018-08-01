@@ -13,7 +13,7 @@ import ContainerMenu from './menus/containerMenu'
 import { Catalog } from './sportsbook/interfaces'
 
 interface State {
-  catalog: Catalog,
+	catalog: Catalog,
 }
 
 interface Sinks {
@@ -43,8 +43,8 @@ function App(sources: Sources): Sinks {
 
 	const sportsbookSinks = Sportsbook(sources)
 	const sportsbookDom$: Stream<VNode> = sportsbookSinks.DOM
-  const sportsbookHttp$: Stream<RequestInput> = sportsbookSinks.HTTP
-  const sportsbookOnion$: Stream<Reducer<State>> = sportsbookSinks.onion
+	const sportsbookHttp$: Stream<RequestInput> = sportsbookSinks.HTTP
+	const sportsbookOnion$: Stream<Reducer<State>> = sportsbookSinks.onion
 
 	// merge child sinks and pass to our sink
 	const appHttp$: Stream<RequestInput> =
@@ -57,7 +57,7 @@ function App(sources: Sources): Sinks {
 			sideMenuHistory$,
 		)
 
-	// etc.
+	// merge child reducers
 	const appReducer$: Stream<Reducer<State>> =
 		xs.merge(sideMenuReducer$, sportsbookOnion$)
 
