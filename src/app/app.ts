@@ -28,6 +28,7 @@ interface Sources {
 	HTTP: HTTPSource,
 	History: Stream<Location>,
 	onion: StateSource<State>,
+	Socket: Stream<any>,
 }
 
 function App(sources: Sources): Sinks {
