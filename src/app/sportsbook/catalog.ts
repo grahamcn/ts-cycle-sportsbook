@@ -87,6 +87,10 @@ function Catalog(sources: Sources): Sinks {
 	// Competitions component is isolated against the 'competitions' property of the state atom.
 	// Our Catalog component is already isolaated against the 'catalog' property
 	// Peeling off layers of state a la MobX?
+
+	// this maybe wrong, which is to look at - are we better off peeling off the state as we go down,
+	// augmenting as we go? and how does this work with push updates?
+	// branch now, perhaps - take out competition? then put back on one branch.
 	const competitionsSinks = isolate(Competitions, 'competitions')(sources)
 
 	// when successfulCatalogDataResponse$ emits, we start listening to the stream of competition Dom
