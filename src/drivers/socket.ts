@@ -6,7 +6,8 @@ export function makeSocketDriver() {
 	const storageDriver = () => {
 		const incoming$: Stream<any> = Stream.create({
 			start: listener => {
-				const socket = io( 'http://ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000')
+				// const socket = io( 'http://ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000')
+				const socket = io( 'http://localhost:8000')
 
 				socket.on('connect', function(){
 					console.log('Connected')

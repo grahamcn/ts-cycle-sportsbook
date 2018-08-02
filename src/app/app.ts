@@ -64,10 +64,11 @@ function App(sources: Sources): Sinks {
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
+			sources.Socket.startWith(undefined), // just to ensure we subscribe somehow for the time being
 			containerMenuDom$,
 			sideMenuDom$,
 			sportsbookDom$,
-		).map(([containerMenuDom, sideMenuDom, sportsbookDom]) =>
+		).map(([socket, containerMenuDom, sideMenuDom, sportsbookDom]) =>
 			div('.container', [
 				div('.container__title',
 					'Sky Bet POC'
