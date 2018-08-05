@@ -22,21 +22,15 @@ function OutcomeComponent(sources: Sources): Sinks {
 	const outcome$ = sources.outcome$
 	const liveData$ = sources.LiveData
 
-	const liveOutcome$: MemoryStream<{}> =
-		xs.merge(
-			outcome$,
+	const liveOutcome$: Stream<{}> =
+		outcome$.map(outcome =>
 			liveData$
-		).fold((acc, curr) => {
-			if (curr.name) { // it's our outcome
-				return curr
-			}
-
-			// live upates
-			return {
-				...acc,
-				price: parseFloat(curr.outcome.price)
-			}
-		}, {})
+				.map(liveData => ({
+						...outcome,
+						price: parseFloat(liveData.outcome.price)
+				}))
+				.startWith(outcome)
+			).flatten()
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
