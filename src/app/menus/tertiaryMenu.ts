@@ -1,4 +1,4 @@
-import { div, VNode, ul, DOMSource } from '@cycle/dom'
+import { div, VNode, ul, DOMSource, p } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -40,7 +40,7 @@ interface Sources {
 
 // Convert to MVI in a copy of this file as an example.
 
-function SideMenu(sources: Sources): Sinks {
+function TertiaryMenu(sources: Sources): Sinks {
 	// define a stream of sport
 	const secondaryDataKey$ =
 		sources.History
@@ -67,10 +67,6 @@ function SideMenu(sources: Sources): Sinks {
 
 	const successMenuData$ = menuData$.filter(data => !data.err)
 	const errorMenuData$ = menuData$.filter(data => !!data.err)
-
-	// END DATA
-
-	// START KINDA INTENT
 
 	// menu groups are the component state (well, an array of menu groups, empty or otherwise).
 	const menuGroups$: xs<Array<Map<string, MenuItem>>> =
@@ -109,15 +105,19 @@ function SideMenu(sources: Sources): Sinks {
 
 	// VIEW ISH
 
-	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(() => div('.menu', 'No menu data for this segment'))
+	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(() =>
+		div('.tertiaryMenu', [
+			p('No menu data for this segment...')
+		])
+	)
 
 	const successMenuDom$: Stream<VNode> =
 		xs.combine(
 			listSinksDOM$,
 			menuGroupSinksDom$,
 		).map(([listSinksDOM, menuGroupSinksDom]) =>
-			div('.menu', [
-				ul('.menu__list', [
+			div('.tertiaryMenu', [
+				ul('.list', [
 					...listSinksDOM,
 					menuGroupSinksDom,
 				])
@@ -159,4 +159,4 @@ function SideMenu(sources: Sources): Sinks {
 	}
 }
 
-export default SideMenu
+export default TertiaryMenu

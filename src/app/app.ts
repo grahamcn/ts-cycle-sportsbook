@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, DOMSource } from '@cycle/dom'
+import { div, VNode, DOMSource, h1 } from '@cycle/dom'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { Location } from '@cycle/history'
 import { StateSource, Reducer } from 'cycle-onionify'
@@ -7,9 +7,9 @@ import isolate from '@cycle/isolate'
 
 import '../css/styles.css'
 
-import SideMenu from './menus/sideMenu'
+import TertiaryMenu from './menus/tertiaryMenu'
 import Sportsbook from './sportsbook'
-import ContainerMenu from './menus/containerMenu'
+import SecondaryMenu from './menus/secondaryMenu'
 
 interface State {}
 
@@ -29,15 +29,15 @@ interface Sources {
 }
 
 function App(sources: Sources): Sinks {
-	const containerMenuSinks = ContainerMenu(sources)
-	const containerMenuDom$ = containerMenuSinks.DOM
-	const containerMenuHistory$ = containerMenuSinks.History
+	const secondaryMenuSinks = SecondaryMenu(sources)
+	const secondaryMenuDom$ = secondaryMenuSinks.DOM
+	const secondaryMenuHistory$ = secondaryMenuSinks.History
 
-	const sideMenuSinks = isolate(SideMenu)(sources)
-	const sideMenuDom$: Stream<VNode> = sideMenuSinks.DOM
-	const sideMenuHttp$: Stream<RequestInput> = sideMenuSinks.HTTP
-	const sideMenuReducer$: Stream<Reducer<State>> = sideMenuSinks.onion
-	const sideMenuHistory$: Stream<string> = sideMenuSinks.History
+	const tertiaryMenuSinks = isolate(TertiaryMenu)(sources)
+	const tertiaryMenuDom$: Stream<VNode> = tertiaryMenuSinks.DOM
+	const tertiaryMenuHttp$: Stream<RequestInput> = tertiaryMenuSinks.HTTP
+	const tertiaryMenuReducer$: Stream<Reducer<State>> = tertiaryMenuSinks.onion
+	const tertiaryMenuHistory$: Stream<string> = tertiaryMenuSinks.History
 
 	const sportsbookSinks = isolate(Sportsbook, 'sportsbook')(sources)
 	const sportsbookDom$: Stream<VNode> = sportsbookSinks.DOM
@@ -46,32 +46,34 @@ function App(sources: Sources): Sinks {
 
 	// merge child sinks and pass to our sink
 	const appHttp$: Stream<RequestInput> =
-		xs.merge(sideMenuHttp$, sportsbookHttp$)
+		xs.merge(tertiaryMenuHttp$, sportsbookHttp$)
 
 	// merge child sinks and pass to our sink
 	const appHistory$: Stream<string> =
 		xs.merge(
-			containerMenuHistory$,
-			sideMenuHistory$,
+			secondaryMenuHistory$,
+			tertiaryMenuHistory$,
 		)
 
 	// merge child reducers
 	const appReducer$: Stream<Reducer<State>> =
-		xs.merge(sideMenuReducer$, sportsbookOnion$)
+		xs.merge(tertiaryMenuReducer$, sportsbookOnion$)
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
-			containerMenuDom$,
-			sideMenuDom$,
+			secondaryMenuDom$,
+			tertiaryMenuDom$,
 			sportsbookDom$,
-		).map(([containerMenuDom, sideMenuDom, sportsbookDom]) =>
+		).map(([secondaryMenuDom, tertiaryMenuDom, sportsbookDom]) =>
 			div('.container', [
-				div('.container__title',
-					'Sky Bet POC'
-				),
-				containerMenuDom,
-				div('.container__content', [
-					sideMenuDom,
+				div('.head', [
+					div('.header',
+						h1('.heading', 'Sky Bet POC')
+					),
+				]),
+				secondaryMenuDom,
+				div('.content', [
+					tertiaryMenuDom,
 					sportsbookDom,
 				])
 			])

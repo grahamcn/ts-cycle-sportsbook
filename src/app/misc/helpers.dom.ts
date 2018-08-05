@@ -1,12 +1,15 @@
 import { MenuItem, Menu } from '../menus/interfaces'
-import { ul, h4, li, a, VNode } from '@cycle/dom'
+import { ul, h4, li, a, VNode, div } from '@cycle/dom'
 
 // render list title, list item function
 export function renderMenuItems({ title, items }: Menu): VNode {
 	return (
-		li('.menu__list', [
-			title && items && h4('.menu__subTitle', title),
-			items && ul('.menu__list',
+		li('.listItem', [
+			title && items &&
+			div('.header', [
+				h4('.heading', title),
+			]),
+			items && ul('.list',
 				items.map(renderMenuItem)
 			),
 		])
@@ -15,8 +18,8 @@ export function renderMenuItems({ title, items }: Menu): VNode {
 
 // render listlink
 export function renderMenuItem(item: MenuItem): VNode {
-	return li('.menu__item',
-		a('.menu__link', {
+	return li('.listItem',
+		a('.link', {
 			attrs: {
 				href: item.url,
 				title: item.title,

@@ -46,9 +46,11 @@ function GroupedMenus(sources: Sources): Sinks {
 			state$,
 			toggleMenuListSinksDom$,
 		).map(([state, toggleMenuListSinksDom]) =>
-			li('.menu__list', [
-				h4('.menu__subTitle', state.title),
-				ul('.menu__list', [
+			li('.list', [
+				div('.header', [
+					h4('.heading', state.title),
+				]),
+				ul('.list', [
 					...toggleMenuListSinksDom,
 				]),
 			])

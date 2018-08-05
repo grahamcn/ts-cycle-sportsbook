@@ -14,21 +14,21 @@ export interface Sinks {
 	History: Stream<string>
 }
 
-function ContainerMenu(sources): Sinks {
+function SecondaryMenu(sources): Sinks {
 
 	const history$ =
-		sources.DOM.select('.containerMenu__link')
+		sources.DOM.select('.secondaryMenu .link')
 			.events('click')
 			.map(getTargetDataUrl)
 
 	const vdom$ =
 		xs.of(containerMenuData)
 			.map(data =>
-				div('.containerMenu',
-					ul('.containerMenu__list',
+				div('.secondaryMenu',
+					ul('.list .inline',
 						data.map((menuItem: MenuItem) =>
-							li('.containerMenu__item',
-								a('.containerMenu__link', {
+							li('.listItem',
+								a('.link', {
 									attrs: {
 										title: menuItem.title,
 										href: menuItem.url,
@@ -49,5 +49,5 @@ function ContainerMenu(sources): Sinks {
 	}
 }
 
-export default ContainerMenu
+export default SecondaryMenu
 

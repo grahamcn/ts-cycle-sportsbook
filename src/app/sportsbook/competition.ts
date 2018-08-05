@@ -18,7 +18,6 @@ export interface Sources {
 }
 
 function CompetitionComponent(sources: Sources): Sinks {
-	const state$ = sources.onion.state$
 	const competition$ = sources.competition$
 	const liveData$ = sources.LiveData
 

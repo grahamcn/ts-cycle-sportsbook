@@ -24,7 +24,7 @@ function SimpleMenu(sources: Sources): Sinks {
 
 	const history$ =
 		sources.DOM
-			.select('.menu__link')
+			.select('.link')
 			.events('click')
 			.map(getTargetDataUrl)
 

@@ -8,13 +8,13 @@ import isolate from '@cycle/isolate'
 
 const openState = {
 	open: true,
-	classes: ['.menu__groupTitle', '.menu__groupTitle--expanded'],
+	classes: ['.header .headerToggle', '.headerToggle--expanded'],
 	arrow: '\u2191'
 }
 
 const closedState = {
 	open: false,
-	classes: ['.menu__groupTitle', '.menu__groupTitle--closed'],
+	classes: ['.header .headerToggle', '.headerToggle--closed'],
 	arrow: '\u2193'
 }
 
@@ -35,13 +35,13 @@ function ToggleMenu(sources: Sources): Sinks {
 
 	const open$ =
 		sources.DOM
-			.select('.menu__groupTitle--closed')
+			.select('.headerToggle--closed')
 			.events('click')
 			.mapTo(openState)
 
 	const close$ =
 		sources.DOM
-			.select('.menu__groupTitle--expanded')
+			.select('.headerToggle--expanded')
 			.events('click')
 			.mapTo(closedState)
 
@@ -66,13 +66,13 @@ function ToggleMenu(sources: Sources): Sinks {
 			toggleState$, // open, classes, arrow character,
 			menuDom$,
 		).map(([state, toggleState, menuDom]) =>
-				li('.menu__item', [
+				li('.listItem', [
 					div(toggleState.classes.join(' '), [
 						state.title,
 						span(toggleState.arrow)
 					]),
 					toggleState.open ?
-						ul('.menu__list', [
+						ul('.list', [
 							menuDom, // simple menu
 						]) : undefined
 				])
