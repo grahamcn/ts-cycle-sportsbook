@@ -274,34 +274,29 @@ h1, h2, h3, h4, h5, h6 {
 
 .selection {
   display: flex;
-  align-items: space-between;
+	justify-content: flex-start;
+	align-items: center;
   padding: 16px;
   border-bottom: 1px solid #e1e4e9;
 }
 
 .selection__details {
-  margin-left: 16px;
-  flex-grow: 1;
+  flex: 1;
 }
 
 .selection__outcome {
-  margin-bottom: 6px;
   color: #132c6c;
   font-weight: 500;
 }
 
-.selection__market {
-  margin-bottom: 6px;
-}
-
 .selection__market,
 .selection__startTime {
+	margin-top: 6px;
   font-size: smaller;
 }
 
 .selection__remove {
-  position: relative;
-  left: 8px;
+	justify-self: flex-end;
   padding: 8px;
   font-weight: 500;
   user-select: none;
