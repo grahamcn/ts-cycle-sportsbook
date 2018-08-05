@@ -1,8 +1,11 @@
 import * as io from 'socket.io-client'
 import {adapt} from '@cycle/run/lib/adapt'
-import { Stream } from 'xstream'
+import xs, { Stream } from 'xstream'
+// import {buffer} from '../app/misc/xstream.extra'
 
 export function makeSocketDriver(socketUrl) {
+	//const separator = xs.periodic(1000)
+
 	const socketDriver = (/* no sinks */) => {
 		const incoming$: Stream<any> = Stream.create({
 			start: listener => {
@@ -19,11 +22,15 @@ export function makeSocketDriver(socketUrl) {
 				socket.emit('liveSportsConfig', {
 					event: 2000,
 					market: 1000,
-					outcome: 500,
+					outcome: 50,
 				})
 			},
 			stop: () => {},
 		})
+		// .compose(buffer(separator))
+		// .map((array: any[]): Stream<any> =>
+		// 	xs.from(array)
+		// ).flatten()
 
 		return adapt(incoming$)
 	}
