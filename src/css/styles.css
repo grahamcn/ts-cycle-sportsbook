@@ -153,13 +153,16 @@ html {
 }
 
 .menu__item .menu__list {
-  display: none;
   margin-bottom: 0;
   margin-left: 8px;
 }
 
-.menu__item--expanded .menu__list {
+.menu__item--expanded + .menu__list {
   display: block;
+}
+
+.menu__item--closed + .menu__list {
+  display: none;
 }
 
 /* Sport */
