@@ -100,9 +100,13 @@ function Catalog(sources: Sources): Sinks {
 					competitions$: xs.of(successfulCatalogDataResponse),
 					LiveData: liveData$,
 				})
-				return sportSinks.DOM
+				// we want to stop listening to these when we make a new request for data,
+				// else the push update updated dom will overwrite the loading/error via the merge
+				// if one arrives
+				return sportSinks.DOM.endWhen(catalogHttpRequest$)
 			})
 			.flatten()
+
 
 	// **************************************************
 	// Reducers - start with undefined as catalog state
