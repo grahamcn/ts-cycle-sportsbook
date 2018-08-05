@@ -69,10 +69,9 @@ export interface Outcome {
 	marketId: string
 	marketName: string
 
-	selected: boolean
+	selected?: boolean // idea
 }
 
 export interface Selection extends Outcome {
-	selected: true
 	isBanker?: boolean
 }

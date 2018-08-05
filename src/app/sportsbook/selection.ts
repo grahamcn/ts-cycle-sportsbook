@@ -34,16 +34,13 @@ function SelectionCompenent(sources: Sources): Sinks {
 		)
 		.map(([selection]) =>
 			li('.listItem .selection', [
-				div(
-					// div(selection.classes.join(' '),
-					// 	selection.price,
-					// ),
+				div('.price',
+					selection.price,
 				),
 				div('.selection__details', [
-					div('.selection__outcome', selection.id),
-					h4(selection.price),
 					div('.selection__outcome', selection.name),
 					div('.selection__market', selection.marketName),
+					div('.selection__startTime', 'time'),
 				]),
 				div('.selection__remove', 'x')
 			]),

@@ -131,7 +131,8 @@ h1, h2, h3, h4, h5, h6 {
 .secondaryMenu .link {
 	font-size: 20px;
   font-weight: 500;
-  padding: 8px 16px;
+	padding: 8px 16px;
+	display: block;
 }
 
 /* tertiaryMenu */
@@ -273,7 +274,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .selection {
   display: flex;
-  align-items: center;
+  align-items: space-between;
   padding: 16px;
   border-bottom: 1px solid #e1e4e9;
 }
@@ -312,7 +313,8 @@ h1, h2, h3, h4, h5, h6 {
 .price {
   padding: 4px 8px;
   font-weight: 500;
-  user-select: none;
+	user-select: none;
+	width: 60px;
 }
 
 .price--clickable {

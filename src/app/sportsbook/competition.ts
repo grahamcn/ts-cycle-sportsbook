@@ -35,6 +35,7 @@ function CompetitionComponent(sources: Sources): Sinks {
 								Object.assign(event, {
 									competitionId: competition.id,
 									competitionName: competition.name,
+									competitioUrlName: competition.urlName
 								})
 							),
 							LiveData: liveData$.filter((d: any) => {

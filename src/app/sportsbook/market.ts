@@ -34,8 +34,10 @@ function MarketComponent(sources: Sources): Sinks {
 							Object.assign(outcome, {
 								competitionId: market.competitionId,
 								competitionName: market.competitionName,
+								competitionUrlName: market.competitionUrlName,
 								eventId: market.eventId,
 								eventName: market.eventName,
+								eventUrlName: market.eventUrlName,
 								marketId: market.id,
 								marketName: market.name,
 							}),

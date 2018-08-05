@@ -33,8 +33,10 @@ function EventComponent(sources: Sources): Sinks {
 								Object.assign(market, {
 									competitionId: event.competitionId,
 									competitionName: event.competitionName,
+									competitioUrlName: event.competitionUrlName,
 									eventId: event.id,
 									eventName: event.name,
+									eventUrlName: event.urlName,
 								})
 							),
 							LiveData: liveData$.filter((d: any) => d && d.outcome.marketId === market.id),
