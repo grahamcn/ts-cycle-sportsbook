@@ -255,8 +255,9 @@ html {
 /* Outcome */
 
 .outcome {
+	display: flex;
+	flex: 1;
 	text-align: center;
-	width: 100px;
 }
 
 .outcome.selected {

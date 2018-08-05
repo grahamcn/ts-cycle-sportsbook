@@ -60,8 +60,9 @@ function MarketComponent(sources: Sources): Sinks {
 			outcomeComponentDoms$,
 		).map(([market, outcomeComponentDoms]) =>
 			div('.market', [
-				h4(market.name),
-				...outcomeComponentDoms,
+				div('.market__outcomes', [
+					...outcomeComponentDoms,
+				]),
 			])
 		)
 

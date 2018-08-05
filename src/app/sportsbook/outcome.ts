@@ -23,11 +23,7 @@ function OutcomeComponent(sources: Sources): Sinks {
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
-			xs.merge(outcome$, liveData$.map(x =>
-				Object.assign(x.outcome, {
-					name: 'updated'
-				})
-			)),
+			xs.merge(outcome$, liveData$),
 			state$,
 		).map(([outcome, selections]) =>
 			div('.outcome', {
@@ -38,8 +34,10 @@ function OutcomeComponent(sources: Sources): Sinks {
 					dataOutcome: JSON.stringify(outcome),
 				}
 			}, [
-				span(outcome.name),
-				h4(outcome.price),
+				div('.outcome__label', outcome.name),
+				div(
+					div('.price', outcome.price)
+				)
 			])
 		)
 
