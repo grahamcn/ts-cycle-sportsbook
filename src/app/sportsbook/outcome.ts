@@ -1,5 +1,5 @@
-import { div, VNode, h4, ul, p, DOMSource, span } from '@cycle/dom'
-import xs, { Stream } from 'xstream'
+import { div, VNode, DOMSource } from '@cycle/dom'
+import xs, { Stream, MemoryStream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 import { Selection, Outcome } from './interfaces'
 
@@ -21,11 +21,27 @@ function OutcomeComponent(sources: Sources): Sinks {
 	const outcome$ = sources.outcome$
 	const liveData$ = sources.LiveData
 
+	const liveOutcome$: MemoryStream<{}> =
+		xs.merge(
+			outcome$,
+			liveData$
+		).fold((acc, curr) => {
+			if (curr.name) { // it's our outcome
+				return curr
+			}
+
+			// live upates
+			return {
+				...acc,
+				price: parseFloat(curr.outcome.price)
+			}
+		}, {})
+
 	const vdom$: Stream<VNode> =
 		xs.combine(
-			xs.merge(outcome$, liveData$),
+			liveOutcome$,
 			state$,
-		).map(([outcome, selections]) =>
+		).map(([outcome, selections]: any) =>
 			div('.outcome', {
 				class: {
 					selected: selections.map(s => s.id).indexOf(outcome.id) > -1,
