@@ -1,29 +1,70 @@
-import { div, VNode, h4, ul, p } from '@cycle/dom'
+import { div, VNode, h4, ul, p, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
-import { Competition } from './interfaces'
+import { Competition, Selection, Outcome } from './interfaces'
 
-interface State extends Competition { }
+import EventComponent, { Sinks as EventComponentSinks } from './event'
+interface State extends Array<Selection> {}
 
 export interface Sinks {
 	DOM: Stream<VNode>,
 }
 
 export interface Sources {
+	competition$: Stream<Competition>
 	onion: StateSource<State>
+	LiveData: Stream<any>
+	DOM: DOMSource
 }
 
-function Competition(sources: Sources): Sinks {
+function CompetitionComponent(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
+	const competition$ = sources.competition$
+	const liveData$ = sources.LiveData
+
+	// pretty much as per competition, with some data enrichment happening along the way, plus
+	// filtering of live data at event, market, outcome level begins.
+	const eventComponentsDom$: Stream<EventComponentSinks[]> =
+		competition$
+			.map(competition =>
+				(competition.preLiveEvents || []).concat(competition.liveEvents || [])
+					.map(event =>
+						EventComponent({
+							DOM: sources.DOM,
+							onion: sources.onion,
+							event$: xs.of(event),
+							LiveData: liveData$.filter((d: any) => {
+								return d && d.outcome.eventId === event.id
+							}),
+						})
+				)
+			)
+
+	const eventComponentsDomDom$$: Stream<Stream<VNode>[]> =
+		eventComponentsDom$
+			.map((eventComponentsDom: EventComponentSinks[]) =>
+				eventComponentsDom
+					.map((eventComponent: EventComponentSinks) =>
+						eventComponent.DOM
+					)
+			)
+
+	const eventComponentDoms$: Stream<VNode[]> =
+		eventComponentsDomDom$$
+			.map((eventComponentsDoms$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...eventComponentsDoms$)
+			)
+			.flatten()
 
 	const vdom$: Stream<VNode> =
-		state$.map(state =>
+		xs.combine(
+			competition$,
+			eventComponentDoms$,
+		).map(([competition, eventComponentDoms]) =>
 			div('.competition', [
-				h4(state.name),
-				ul('.events'),
-				p('No events found'),
+				h4(competition.name),
+				...eventComponentDoms,
 			])
-
 		)
 
 	return {
@@ -31,4 +72,4 @@ function Competition(sources: Sources): Sinks {
 	}
 }
 
-export default Competition
+export default CompetitionComponent

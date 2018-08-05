@@ -1,8 +1,3 @@
-export interface Sportsbook {
-  catalog: Catalog
-  basket: Selection[]
-}
-
 export interface Catalog {
 	competitions: Map<string, Competition>
 	events: Map<string, Event>
@@ -73,6 +68,11 @@ export interface Outcome {
 
 	marketId: string
 	marketName: string
+
+	selected: boolean
 }
 
-export interface Selection extends Outcome {}
+export interface Selection extends Outcome {
+	selected: true
+	isBanker?: boolean
+}

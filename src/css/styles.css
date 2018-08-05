@@ -167,7 +167,8 @@ html {
 .sport {
   flex-grow: 1;
   padding: 16px 16px 0;
-  background: #fff;
+	background: #fff;
+	overflow-x: scroll;
 }
 
 .sport__title {
@@ -254,7 +255,12 @@ html {
 /* Outcome */
 
 .outcome {
-  text-align: center;
+	text-align: center;
+	width: 100px;
+}
+
+.outcome.selected {
+	background-color: #1fa94a;
 }
 
 .outcome__label {

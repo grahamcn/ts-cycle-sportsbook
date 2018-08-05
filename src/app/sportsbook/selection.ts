@@ -1,0 +1,58 @@
+import xs, { Stream } from 'xstream'
+import { DOMSource, VNode, div, h4 } from '@cycle/dom'
+import { StateSource, Reducer } from 'cycle-onionify'
+import { Selection } from './interfaces'
+
+export interface State extends Selection {}
+
+export interface Sources {
+	DOM: DOMSource
+	onion: StateSource<State>
+	socket: Stream<any>
+}
+
+export interface Sinks {
+	DOM: Stream<VNode>
+	onion: Stream<Reducer<State>>
+}
+
+function SelectionCompenent(sources: Sources): Sinks {
+	const state$ = sources.onion.state$
+
+	const deleteReducer$: Stream<Reducer<State>> =
+		sources.DOM.select('.selection__remove').events('click')
+			.mapTo(function deleteReducer() {
+				return undefined
+			})
+
+	const reducer$: Stream<Reducer<State>> =
+		xs.merge(deleteReducer$)
+
+	const vdom$: Stream<VNode> =
+		xs.combine(
+			state$,
+		)
+		.map(([selection]) =>
+			div('.selection', [
+				div(
+					// div(selection.classes.join(' '),
+					// 	selection.price,
+					// ),
+				),
+				div('.selection__details', [
+					div('.selection__outcome', selection.id),
+					h4(selection.price),
+					div('.selection__outcome', selection.name),
+					div('.selection__market', selection.marketName),
+				]),
+				div('.selection__remove', 'x')
+			]),
+		)
+
+	return {
+		DOM: vdom$,
+		onion: reducer$,
+	}
+}
+
+export default SelectionCompenent
