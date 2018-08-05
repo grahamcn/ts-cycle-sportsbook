@@ -31,7 +31,12 @@ function CompetitionComponent(sources: Sources): Sinks {
 						EventComponent({
 							DOM: sources.DOM,
 							onion: sources.onion,
-							event$: xs.of(event),
+							event$: xs.of(
+								Object.assign(event, {
+									competitionId: competition.id,
+									competitionName: competition.name,
+								})
+							),
 							LiveData: liveData$.filter((d: any) => {
 								return d && d.outcome.eventId === event.id
 							}),

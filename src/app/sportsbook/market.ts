@@ -25,18 +25,27 @@ function MarketComponent(sources: Sources): Sinks {
 	// create a lens such that the outcome gets a selected status
 	const outcomeComponentsSinks$: Stream<OutcomeComponentSinks[]> =
 		market$
-			.map(({outcomes}) =>
-					outcomes.map(outcome =>
-						OutcomeComponent({
-							DOM: sources.DOM,
-							onion: sources.onion,
-							outcome$: xs.of(outcome),
-							LiveData: liveData$.filter((d: any) =>
-								d && d.outcome.id === outcome.id
-							),
-						})
-				)
+			.map(market =>
+				market.outcomes.map(outcome =>
+					OutcomeComponent({
+						DOM: sources.DOM,
+						onion: sources.onion,
+						outcome$: xs.of(
+							Object.assign(outcome, {
+								competitionId: market.competitionId,
+								competitionName: market.competitionName,
+								eventId: market.eventId,
+								eventName: market.eventName,
+								marketId: market.id,
+								marketName: market.name,
+							}),
+						),
+						LiveData: liveData$.filter((d: any) =>
+							d && d.outcome.id === outcome.id
+						),
+					})
 			)
+		)
 
 	const outcomeComponentsDom$$: Stream<Stream<VNode>[]> =
 		outcomeComponentsSinks$

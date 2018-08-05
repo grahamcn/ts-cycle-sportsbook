@@ -24,12 +24,19 @@ function EventComponent(sources: Sources): Sinks {
 
 	const marketComponentsSinks$: Stream<MarketComponentSinks[]> =
 		event$
-			.map(({markets}) =>
-					markets.map(market =>
+			.map(event =>
+					event.markets.map(market =>
 						MarketComponent({
 							DOM: sources.DOM,
 							onion: sources.onion,
-							market$: xs.of(market),
+							market$: xs.of(
+								Object.assign(market, {
+									competitionId: event.competitionId,
+									competitionName: event.competitionName,
+									eventId: event.id,
+									eventName: event.name,
+								})
+							),
 							LiveData: liveData$.filter((d: any) => d && d.outcome.marketId === market.id),
 						})
 				)
