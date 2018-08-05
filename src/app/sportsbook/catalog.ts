@@ -1,4 +1,4 @@
-import { div, VNode, p } from '@cycle/dom'
+import { div, VNode, p, DOMSource, map } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -13,13 +13,13 @@ import {
 	getCatalogDataUrl,
 } from '../misc/helpers'
 
-import { flattenPageData } from '../misc/helpers.data'
+import { flattenPageData, fixPageData } from '../misc/helpers.data'
 import { simpleHttpResponseReplaceError } from '../misc/helpers.xs'
-import { Catalog } from './interfaces'
+import { Catalog, Selection } from './interfaces'
 
-import Competitions from './competitions'
+import Sport from './sport'
 
-interface State extends Catalog { }
+interface State extends Array<Selection> {}
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -31,9 +31,19 @@ interface Sources {
 	History: Stream<Location>,
 	HTTP: HTTPSource,
 	onion: StateSource<State>
+	LiveData: Stream<any>
+	DOM: DOMSource
 }
 
 function Catalog(sources: Sources): Sinks {
+
+	const liveData$ = sources.LiveData
+
+	// nothing below here is isolated, all streams, which gives us access to the click events, for ex.
+	// the below components simply spit out Dom. again, as ever, check thsi assumption as you go.
+	// they should have access to the state, which is the selections.
+	// they all only use that to render.
+	// the click handler here does the management of state
 
 	// stream of pathnames transformed to catalog data url
 	const catalogDataUrl$ =
@@ -67,7 +77,7 @@ function Catalog(sources: Sources): Sinks {
 	const successfulCatalogDataResponse$ =
 		catalogDataResponse$
 			.filter(data => !data.err)
-			.map(flattenPageData)
+			.map(fixPageData)
 
 	// as above, but filter for erroneous responses.
 	const unsuccessfulCatalogDataResponse$ =
@@ -84,45 +94,52 @@ function Catalog(sources: Sources): Sinks {
 			.compose(dropRepeats())
 			.mapTo(div('.catalog', 'loading...'))
 
-	// Competitions component is isolated against the 'competitions' property of the state atom.
-	// Our Catalog component is already isolaated against the 'catalog' property
-	// Peeling off layers of state a la MobX?
-
-	// this maybe wrong, which is to look at - are we better off peeling off the state as we go down,
-	// augmenting as we go? and how does this work with push updates?
-	// branch now, perhaps - take out competition? then put back on one branch.
-	const competitionsSinks = isolate(Competitions, 'competitions')(sources)
-
-	// when successfulCatalogDataResponse$ emits, we start listening to the stream of competition Dom
-	// because a value emitted by successfulCatalogDataResponse is mapped to a stream, we then
-	// have a stream of stream of Doms, hence we need to flatten that by one dimension to have a stream of Doms
+	// successful page data is mapped to a sport component vdom
 	const successPageDom$: Stream<VNode> =
 		successfulCatalogDataResponse$
-			.map(() => competitionsSinks.DOM) // value of data is not important here
+			.map(successfulCatalogDataResponse => {
+				const sportSinks = Sport({
+					DOM: sources.DOM,
+					onion: sources.onion,
+					competitions$: xs.of(successfulCatalogDataResponse),
+					LiveData: liveData$,
+				})
+				return sportSinks.DOM
+			})
 			.flatten()
 
 	// Reducers - start with undefined as catalog state
 	const defaultReducer$: Stream<Reducer<State>> =
-		xs.of(function defaultReducer(): State {
-			return undefined
+		xs.of(function defaultReducer(prev: State): State {
+			if (typeof prev === 'undefined') {
+				return []
+			} else {
+				return prev
+			}
 		})
 
-	// when we recieve data succesfuly, it replaces the state.
-	const succesfulCatalogDataReducer$: Stream<Reducer<State>> =
-		successfulCatalogDataResponse$
-			.map(pageData => () => pageData)
+	const addToSelectionsReducer$ =
+		sources.DOM.select('.outcome').events('click')
+			.map((e: any) => e.ownerTarget)
+			.map((t: any) => JSON.parse(t.dataset.dataOutcome))
+			.map(selection =>
+				function addOneItemReducer(prev: State): State {
+					return [...prev, selection]
+				}
+			)
 
-	// when we change catalog data, clear the state.
-	// what we are doing with reducers is returning a stream of reducer functions that are executed againt
-	// state.
-	// so when the url stream emits, we run the function returned () => undefined against the previous state
-	const resetCatalogDataReducer$: Stream<Reducer<State>> =
-		catalogDataUrl$
-			.compose(dropRepeats())
-			.map(() => () => undefined)
+	const removeSelectionReducer$ =
+		sources.DOM.select('.outcome.selected').events('click')
+			.map((e: any) => e.ownerTarget)
+			.map((t: any) => JSON.parse(t.dataset.dataOutcome).id)
+			.map(selectionId =>
+				function removeSelectionReducer(prev: State): State {
+					return prev.filter(({id}) => id !== selectionId)
+				}
+			)
 
 	const catalogReducer$: Stream<Reducer<State>> =
-		xs.merge(defaultReducer$, succesfulCatalogDataReducer$, resetCatalogDataReducer$)
+		xs.merge(defaultReducer$, addToSelectionsReducer$, removeSelectionReducer$)
 
 	// merge our dom streams - success, loading, error
 	const vdom$: Stream<VNode> =

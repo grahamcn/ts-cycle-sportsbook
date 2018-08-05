@@ -1,72 +1,57 @@
 import { div, VNode, h3, span } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
+import { StateSource, makeCollection, Reducer } from 'cycle-onionify'
+
+import { Selection } from './interfaces'
+import SelectionComponent from './selection'
+
+interface State extends Array<Selection> {}
 
 interface Sinks {
 	DOM: Stream<VNode>,
+	onion: Stream<Reducer<State>>
 }
 
-interface Sources { }
-
-interface Selection {
-	price: string
-	outcome: string
-	market: string
-	startTime: string
-	classes: string[]
+interface Sources {
+	onion: StateSource<State>
 }
 
 function Betslip(sources: Sources): Sinks {
+	const state$ = sources.onion.state$
 
-	const selections$: Stream<Selection[]> =
-		xs.from([[{
-			price: '1.23',
-			outcome: 'Arsenal',
-			market: '1X2 - Arsenal - Manchester City',
-			startTime: '11/08/2018 ore 16:00',
-			classes: ['.price', '.price--clicked'],
-		}, {
-			price: '1.75',
-			outcome: 'Under 2.5',
-			market: 'Under / Over - Bournemouth - Cardiff City',
-			startTime: '11/08/2018 ore 16:00',
-			classes: ['.price', '.price--clicked', '.price--updated'],
-		}, {
-			price: 'Sosp',
-			outcome: 'Crystal Palce',
-			market: '1X2 - Fulham - Crystal Palace',
-			startTime: '12/08/2018 ore 16:00',
-			classes: ['.price'],
-		}]])
+	// a list derived from the components state
+	const List = makeCollection({
+		item: SelectionComponent,
+		itemKey: (item: any) => item.id,
+		itemScope: key => key,
+		collectSinks: instances => ({
+			onion: instances.pickMerge('onion'), // merge all the state streams
+			DOM: instances.pickCombine('DOM') // combine all the dom streams
+		})
+	})
 
+	const listSinks = List(sources) // no isolation in particular, just against state by default
+	const listSinksDOM$: Stream<VNode[]> = listSinks.DOM
+	const linkOnion$: Stream<Reducer<State>> = listSinks.onion
+
+	// "😸"
 	const vdom$: Stream<VNode> =
-		selections$.map(selections =>
+		xs.combine(
+			state$,
+			listSinksDOM$,
+		).map(([state, listSinksDOM]) =>
 			div('.betslip', [ // list
-				h3('.betslip__title', [
-					span('.betslip__count', 3),
-					'Bet Slip'
+				h3([
+					!state.length ? undefined : span(`${state.length} `),
+					span('Betslip'),
 				]),
-				div('.betslip__selections',
-					selections.map((selection: Selection) =>
-						div('.selection', [
-							div(
-								div(selection.classes.join(' '),
-									selection.price,
-								),
-							),
-							div('.selection__details', [
-								div('.selection__outcome', selection.outcome),
-								div('.selection__market', selection.market),
-								div('.selection__startTime', selection.startTime),
-							]),
-							div('.selection__remove', 'x')
-						])
-					)
-				)
+				...listSinksDOM
 			])
 		)
 
 	return {
 		DOM: vdom$,
+		onion: linkOnion$,
 	}
 }
 

@@ -12,7 +12,7 @@ const drivers = {
 	DOM: makeDOMDriver('#app'),
 	HTTP: makeHTTPDriver(),
 	History: makeHistoryDriver(),
-	Socket: makeSocketDriver(socketUrl),
+	LiveData: makeSocketDriver(socketUrl),
 }
 
 const wrappedMain = onionify(App)

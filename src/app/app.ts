@@ -14,18 +14,18 @@ import ContainerMenu from './menus/containerMenu'
 interface State {}
 
 interface Sinks {
-	DOM: Stream<VNode>,
-	HTTP: Stream<RequestInput>,
-	onion: Stream<Reducer<State>>,
+	DOM: Stream<VNode>
+	HTTP: Stream<RequestInput>
+	onion: Stream<Reducer<State>>
 	History: Stream<string>
 }
 
 interface Sources {
-	DOM: DOMSource,
-	HTTP: HTTPSource,
-	History: Stream<Location>,
-	onion: StateSource<State>,
-	Socket: Stream<any>,
+	DOM: DOMSource
+	HTTP: HTTPSource
+	History: Stream<Location>
+	onion: StateSource<State>
+	LiveData: Stream<any>
 }
 
 function App(sources: Sources): Sinks {
@@ -39,10 +39,10 @@ function App(sources: Sources): Sinks {
 	const sideMenuReducer$: Stream<Reducer<State>> = sideMenuSinks.onion
 	const sideMenuHistory$: Stream<string> = sideMenuSinks.History
 
-	const sportsbookSinks = Sportsbook(sources)
+	const sportsbookSinks = isolate(Sportsbook, 'sportsbook')(sources)
 	const sportsbookDom$: Stream<VNode> = sportsbookSinks.DOM
 	const sportsbookHttp$: Stream<RequestInput> = sportsbookSinks.HTTP
-  const sportsbookOnion$: Stream<Reducer<State>> = sportsbookSinks.onion
+	const sportsbookOnion$: Stream<Reducer<State>> = sportsbookSinks.onion
 
 	// merge child sinks and pass to our sink
 	const appHttp$: Stream<RequestInput> =
@@ -61,11 +61,10 @@ function App(sources: Sources): Sinks {
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
-			sources.Socket.startWith(undefined), // just to ensure we subscribe somehow for the time being
 			containerMenuDom$,
 			sideMenuDom$,
-      sportsbookDom$,
-		).map(([socket, containerMenuDom, sideMenuDom, sportsbookDom]) =>
+			sportsbookDom$,
+		).map(([containerMenuDom, sideMenuDom, sportsbookDom]) =>
 			div('.container', [
 				div('.container__title',
 					'Sky Bet POC'

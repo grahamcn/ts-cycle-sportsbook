@@ -1,15 +1,17 @@
-import { div, VNode } from '@cycle/dom'
+import { div, VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import isolate from '@cycle/isolate'
+import { Reducer, StateSource } from 'cycle-onionify'
 
 import Betslip from './betslip'
 import CatalogComponent from './catalog'
-import { Reducer } from 'cycle-onionify'
-import { Sportsbook } from './interfaces'
+import { Selection } from './interfaces'
 
-interface State extends Sportsbook { }
+interface State {
+	selections: Selection[]
+}
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -18,26 +20,77 @@ interface Sinks {
 }
 
 interface Sources {
-	History: Stream<Location>,
+	History: Stream<Location>
 	HTTP: HTTPSource,
+	onion: StateSource<State>
+	LiveData: Stream<any>
+	DOM: DOMSource
 }
 
 function Sportsbook(sources: Sources): Sinks {
 
-	const catalogSinks = isolate(CatalogComponent, 'catalog')(sources)
-	const betslipSinks = Betslip(sources)
+	const liveData$ = sources.LiveData
 
+	const catalogSinks = isolate(CatalogComponent, {
+		onion: 'selections',
+		DOM: sources.DOM, // needs access to clicks
+	})(sources)
+	const catalogDom$: Stream<VNode> = catalogSinks.DOM
+	// removals, deletions via clicks on selected/unselecetd outcomes
+	const catalogOnion$: Stream<Reducer<State>> = catalogSinks.onion
+
+	const betslipSinks = isolate(Betslip, 'selections')(sources)
+	const betslipDom$: Stream<VNode> = betslipSinks.DOM
+	// deletions from list
+	const betslipOnion$: Stream<Reducer<State>> = betslipSinks.onion
+
+	// th catalog makes http requests. pass these to out sinks.
 	const sportsbookHttp$ = catalogSinks.HTTP
-	const sportsbookOnion$ = catalogSinks.onion
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
-			catalogSinks.DOM,
-			betslipSinks.DOM,
+			catalogDom$,
+			betslipDom$,
 		).map(([catalogDom, betslipDom]) =>
 			div('.sportsbook', [
-				catalogDom, betslipDom
+				catalogDom,
+				betslipDom,
 			])
+		)
+
+	// State
+	const defaultReducer$: Stream<Reducer<State>> =
+		xs.of(function () {
+			return {
+				selections: [],
+			}
+		})
+
+	// apply live data updates to the state
+	const liveDataReducer$: Stream<Reducer<State>> =
+		liveData$.map((liveData: any) =>
+			function liveDataReducer(prev: State): State {
+				return {
+					...prev,
+					selections:
+						prev.selections.map(selection => {
+							if (selection.id === liveData.outcome.id) {
+								return Object.assign({}, selection, {
+									price: parseFloat(liveData.outcome.price) // sort out price type.
+								})
+							}
+							return selection
+						})
+					}
+			}
+		)
+
+	const sportsbookOnion$ =
+		xs.merge(
+			defaultReducer$,
+			catalogOnion$,
+			betslipOnion$,
+			liveDataReducer$,
 		)
 
 	return {

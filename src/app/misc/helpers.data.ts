@@ -34,6 +34,16 @@ function createIdMap(array) {
 		}, new Map())
 }
 
+export function fixPageData(pageData) {
+	if (!pageData || !pageData.data || !pageData.data.types) {
+		return []
+	}
+
+	// filter for competitions with events here, or in the comps component perhaps.
+	// how defensive do we need to be?
+	return pageData.data.types
+}
+
 export function flattenPageData(pageData) {
 	// hack or generic competition end point, which doesn't have types
 	// will need addressing ie transforming to state shape.
