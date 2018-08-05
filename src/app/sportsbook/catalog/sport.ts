@@ -2,11 +2,9 @@ import { VNode, DOMSource, ul } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
-import { Competition } from './interfaces'
-import CompetitionComponent from './competition'
-import { Selection } from './interfaces'
-
-import { Sinks as CompetitionComponentSinks } from './competition'
+import { Competition } from '../interfaces'
+import { Selection } from '../interfaces'
+import CompetitionComponent, { Sinks as CompetitionComponentSinks } from './competition'
 
 export interface State extends Array<Selection> { }
 

@@ -1,7 +1,8 @@
 import { div, VNode, DOMSource, li } from '@cycle/dom'
 import xs, { Stream, MemoryStream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
-import { Selection, Outcome } from './interfaces'
+
+import { Selection, Outcome } from '../interfaces'
 
 export interface State extends Array<Selection> {}
 

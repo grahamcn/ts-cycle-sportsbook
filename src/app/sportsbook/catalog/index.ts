@@ -4,18 +4,15 @@ import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { Reducer, StateSource } from 'cycle-onionify'
 
-import { dropRepeats } from '../misc/xstream.extra'
-
 import {
 	pick,
 	transformPathToPageDataPath,
 	getCatalogDataUrl,
-} from '../misc/helpers'
-
-import { fixPageData } from '../misc/helpers.data'
-import { simpleHttpResponseReplaceError } from '../misc/helpers.xs'
-import { Catalog, Selection } from './interfaces'
-
+} from '../../misc/helpers'
+import { fixPageData } from '../../misc/helpers.data'
+import { simpleHttpResponseReplaceError } from '../../misc/helpers.xs'
+import { dropRepeats } from '../../misc/xstream.extra'
+import { Catalog, Selection } from '../interfaces'
 import Sport from './sport'
 
 interface State extends Array<Selection> {}
@@ -45,7 +42,7 @@ function Catalog(sources: Sources): Sinks {
 	// the click handler here does the management of state
 
 	// stream of pathnames transformed to catalog data url
-	const catalogDataUrl$ =
+	const catalogDataUrl$: Stream<string> =
 		sources.History
 			.map(pick('pathname'))
 			.map(transformPathToPageDataPath)
@@ -118,7 +115,7 @@ function Catalog(sources: Sources): Sinks {
 			}
 		})
 
-	const addToSelectionsReducer$ =
+	const addToSelectionsReducer$: Stream<Reducer<State>> =
 		sources.DOM.select('.outcome').events('click')
 			.map((e: any) => e.ownerTarget)
 			.map((t: any) => JSON.parse(t.dataset.dataOutcome))
@@ -128,7 +125,7 @@ function Catalog(sources: Sources): Sinks {
 				}
 			)
 
-	const removeSelectionReducer$ =
+	const removeSelectionReducer$: Stream<Reducer<State>> =
 		sources.DOM.select('.outcome.selected').events('click')
 			.map((e: any) => e.ownerTarget)
 			.map((t: any) => JSON.parse(t.dataset.dataOutcome).id)

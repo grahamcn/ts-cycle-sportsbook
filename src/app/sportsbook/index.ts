@@ -6,6 +6,7 @@ import isolate from '@cycle/isolate'
 import { Reducer, StateSource } from 'cycle-onionify'
 
 import Betslip from './betslip'
+
 import CatalogComponent from './catalog'
 import { Selection } from './interfaces'
 

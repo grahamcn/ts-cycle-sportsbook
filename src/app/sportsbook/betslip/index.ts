@@ -2,8 +2,8 @@ import { div, VNode, h3, span, ul } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource, makeCollection, Reducer } from 'cycle-onionify'
 
-import { Selection } from './interfaces'
-import SelectionComponent from './selection'
+import { Selection } from '../interfaces'
+import SelectionComponent from '../catalog/selection'
 
 interface State extends Array<Selection> {}
 

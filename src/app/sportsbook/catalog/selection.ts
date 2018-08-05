@@ -1,7 +1,7 @@
 import xs, { Stream } from 'xstream'
 import { DOMSource, VNode, div, h4, li } from '@cycle/dom'
 import { StateSource, Reducer } from 'cycle-onionify'
-import { Selection } from './interfaces'
+import { Selection } from '../interfaces'
 
 export interface State extends Selection {}
 

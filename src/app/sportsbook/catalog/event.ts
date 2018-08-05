@@ -1,8 +1,8 @@
-import { div, VNode, DOMSource, a, li, ul } from '@cycle/dom'
+import { VNode, DOMSource, a, li, ul } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
-import { Event, Selection } from './interfaces'
 
+import { Event, Selection } from '../interfaces'
 import MarketComponent, { Sinks as MarketComponentSinks } from './market'
 
 export interface State extends Array<Selection> {}
