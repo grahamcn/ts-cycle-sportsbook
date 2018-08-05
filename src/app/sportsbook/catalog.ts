@@ -12,7 +12,7 @@ import {
 	getCatalogDataUrl,
 } from '../misc/helpers'
 
-import { flattenPageData, fixPageData } from '../misc/helpers.data'
+import { fixPageData } from '../misc/helpers.data'
 import { simpleHttpResponseReplaceError } from '../misc/helpers.xs'
 import { Catalog, Selection } from './interfaces'
 

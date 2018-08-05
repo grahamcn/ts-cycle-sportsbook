@@ -63,6 +63,10 @@ h1, h2, h3, h4, h5, h6 {
 	list-style: none;
 }
 
+.list + .list {
+	margin-top: 16px;
+}
+
 .list.inline {
 	display: flex;
 	flex-direction: row;
@@ -172,120 +176,61 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .catalog {
-	flex: 1;
-}
-
-/* Sport */
-
-.sport {
-  flex-grow: 1;
-  padding: 16px 16px 0;
 	background: #fff;
-	overflow-x: scroll;
+	flex: 1;
+	padding: 16px;
 }
 
-.sport__title {
-  margin-bottom: 16px;
-  font-size: 24px;
+.eventGroup > .header {
+	background: #18418c;
+	color: #fff;
+	padding: 12px 16px;
 }
 
-.sport__competition {
-  margin-bottom: 16px;
-  font-size: 18px;
+.eventGroup > .header > .heading {
+	font-size: 16px;
 }
 
-/* Event list */
-
-.eventList {
-  margin-bottom: 16px;
-}
-
-.eventList__header {
-  margin-bottom: 0;
-  padding: 12px 16px;
-  color: #fff;
-  background: #18418c;
-  font-size: 16px;
-}
-
-.eventList__events {
-  border: solid #e1e4e9;
-  border-width: 0 1px 1px;
+.events {
+	border: solid 1px #e1e4e9;
 }
 
 /* Event */
-
 .event {
   display: flex;
   border-bottom: 1px solid #e1e4e9;
 }
 
 .event:last-child {
-  border-bottom: 0;
+  border-bottom: none;
 }
 
 .event__name {
-  width: 40%;
-  padding: 8px 16px;
+	padding-left: 16px;
+	display: flex;
+	align-items: center;
+	width: 200px;
+	height: 60px;
   border-right: 1px solid #e1e4e9;
   line-height: 1.4;
-  text-decoration: none;
-  color: #2c549e;
 }
-
-.event__name:hover {
-  text-decoration: underline;
-}
-
-.event__startTime {
-  font-size: smaller;
-  color: #aaa;
-}
-
-.event__markets {
-  display: flex;
-  width: 100%;
-  overflow: hidden;
-  background: #fbfbfb;
-}
-
-/* Market */
 
 .market {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
 }
-
-.market__outcomes {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  padding: 0 5%;
-}
-
-/* Outcome */
 
 .outcome {
 	display: flex;
-	flex: 1;
-	text-align: center;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100px;
+	overflow: hidden;
 }
 
 .outcome.selected {
 	background-color: #1fa94a;
 }
-
-.outcome__label {
-  margin-bottom: 6px;
-  font-size: smaller;
-}
-
-
-
-
-
 
 /* Betslip */
 

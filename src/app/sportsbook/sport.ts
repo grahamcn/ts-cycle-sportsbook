@@ -1,4 +1,4 @@
-import { div, VNode, DOMSource } from '@cycle/dom'
+import { VNode, DOMSource, ul } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
@@ -66,7 +66,7 @@ function Sport(sources: Sources): Sinks {
 		xs.combine(
 			competitionComponentDoms$,
 		).map(([competitionComponentsDom]) =>
-			div('.sport', [
+			ul('.list', [
 					...competitionComponentsDom,
 				])
 			)

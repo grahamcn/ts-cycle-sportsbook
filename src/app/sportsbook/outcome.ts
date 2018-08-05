@@ -1,4 +1,4 @@
-import { div, VNode, DOMSource } from '@cycle/dom'
+import { div, VNode, DOMSource, li } from '@cycle/dom'
 import xs, { Stream, MemoryStream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 import { Selection, Outcome } from './interfaces'
@@ -42,7 +42,7 @@ function OutcomeComponent(sources: Sources): Sinks {
 			liveOutcome$,
 			state$,
 		).map(([outcome, selections]: any) =>
-			div('.outcome', {
+			li('.listItem .outcome', {
 				class: {
 					selected: selections.map(s => s.id).indexOf(outcome.id) > -1,
 				},

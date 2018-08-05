@@ -1,4 +1,4 @@
-import { div, VNode, DOMSource, a } from '@cycle/dom'
+import { div, VNode, DOMSource, a, li, ul } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 import { Event, Selection } from './interfaces'
@@ -57,11 +57,11 @@ function EventComponent(sources: Sources): Sinks {
 			event$,
 			marketComponentDoms$,
 		).map(([event, marketComponentDoms]) =>
-			div('.event', [
-				a('.event__name',
+			li('.listItem .event', [
+				a('.link .event__name',
 					event.name
 				),
-				div('.event__markets', [
+				ul('.list .inline', [
 					...marketComponentDoms,
 				])
 			])
