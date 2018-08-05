@@ -1,4 +1,4 @@
-import { div, VNode, h3, span } from '@cycle/dom'
+import { div, VNode, h3, span, ul } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource, makeCollection, Reducer } from 'cycle-onionify'
 
@@ -41,11 +41,15 @@ function Betslip(sources: Sources): Sinks {
 			listSinksDOM$,
 		).map(([state, listSinksDOM]) =>
 			div('.betslip', [ // list
-				h3([
-					!state.length ? undefined : span(`${state.length} `),
-					span('Betslip'),
+				div('.header', [
+					h3('.heading', [
+						!state.length ? undefined : span('.count', `${state.length} `),
+						span('Betslip'),
+					]),
 				]),
-				...listSinksDOM
+				ul('.list', [
+					...listSinksDOM
+				])
 			])
 		)
 

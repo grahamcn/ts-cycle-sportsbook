@@ -103,7 +103,7 @@ h1, h2, h3, h4, h5, h6 {
 .container {
 	display: flex;
   flex-direction: column;
-  flex: 1;
+	width: 100%;
 }
 
 /* head */
@@ -136,8 +136,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* tertiaryMenu */
 .tertiaryMenu {
-	width: 300px;
-	min-width: 300px;
+	width: 250px;
   border-right: 1px solid #e1e4e9;
 	background: #f9f9f9;
 	padding: 16px;
@@ -173,11 +172,12 @@ h1, h2, h3, h4, h5, h6 {
 .sportsbook {
 	display: flex;
 	flex-direction: row;
+	flex: 1;
 }
 
 .catalog {
-	background: #fff;
 	flex: 1;
+	background: #fff;
 	padding: 16px;
 }
 
@@ -215,8 +215,8 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.4;
 }
 
-.market {
-  display: flex;
+.markets {
+	width: 100%;
 }
 
 .outcome {
@@ -224,7 +224,12 @@ h1, h2, h3, h4, h5, h6 {
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	width: 100px;
+	width: 80px;
+	overflow: hidden;
+}
+
+.outcome__label {
+	white-space: nowrap;
 	overflow: hidden;
 }
 
@@ -233,22 +238,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Betslip */
-
 .betslip {
-  flex-basis: 200px;
-  padding: 16px 0;
+	flex: 1;
   border-left: 1px solid #e1e4e9;
   background: #f9f9f9;
 }
 
-.betslip__title {
-  display: flex;
-  align-items: center;
-  margin-bottom: 16px;
-  padding: 0 16px;
+.betslip .header {
+	background-color: none;
+	padding-left: 16px;
+	border-bottom: 1px solid #e1e4e9;
 }
 
-.betslip__count {
+.betslip .header .count {
   margin-right: 8px;
   padding: 6px 10px;
   line-height: 1;
@@ -258,8 +260,8 @@ h1, h2, h3, h4, h5, h6 {
   font-size: smaller;
 }
 
-.betslip__selections {
-  border-top: 1px solid #e1e4e9;
+.betslip > .list > .listItem {
+	border-bottom: 1px solid #e1e4e9;
 }
 
 /* Selection */

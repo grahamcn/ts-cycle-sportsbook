@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { DOMSource, VNode, div, h4 } from '@cycle/dom'
+import { DOMSource, VNode, div, h4, li } from '@cycle/dom'
 import { StateSource, Reducer } from 'cycle-onionify'
 import { Selection } from './interfaces'
 
@@ -33,7 +33,7 @@ function SelectionCompenent(sources: Sources): Sinks {
 			state$,
 		)
 		.map(([selection]) =>
-			div('.selection', [
+			li('.listItem .selection', [
 				div(
 					// div(selection.classes.join(' '),
 					// 	selection.price,

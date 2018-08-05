@@ -61,7 +61,7 @@ function EventComponent(sources: Sources): Sinks {
 				a('.link .event__name',
 					event.name
 				),
-				ul('.list .inline', [
+				ul('.list .inline .markets', [
 					...marketComponentDoms,
 				])
 			])
