@@ -22,12 +22,12 @@ function OutcomeComponent(sources: Sources): Sinks {
 	const outcome$ = sources.outcome$
 	const liveData$ = sources.LiveData
 
-	const liveOutcome$: Stream<{}> =
+	const liveOutcome$: Stream<Outcome> =
 		outcome$.map(outcome =>
 			liveData$
 				.map(liveData => ({
-						...outcome,
-						price: parseFloat(liveData.outcome.price)
+					...outcome,
+					price: parseFloat(liveData.outcome.price)
 				}))
 				.startWith(outcome)
 			).flatten()
