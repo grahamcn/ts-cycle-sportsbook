@@ -1,4 +1,4 @@
-import { div, VNode, h4, ul, p, DOMSource, a } from '@cycle/dom'
+import { div, VNode, DOMSource, a } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 import { Event, Selection } from './interfaces'

@@ -1,7 +1,7 @@
 import { div, VNode, DOMSource, h2, h3 } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
-import { Competition, Selection, Outcome } from './interfaces'
+import { Competition, Selection } from './interfaces'
 
 import EventComponent, { Sinks as EventComponentSinks } from './event'
 interface State extends Array<Selection> {}

@@ -1,8 +1,7 @@
-import { div, VNode, p, DOMSource, map } from '@cycle/dom'
+import { div, VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
-import isolate from '@cycle/isolate'
 import { Reducer, StateSource } from 'cycle-onionify'
 
 import { dropRepeats } from '../misc/xstream.extra'
@@ -108,6 +107,7 @@ function Catalog(sources: Sources): Sinks {
 			})
 			.flatten()
 
+	// **************************************************
 	// Reducers - start with undefined as catalog state
 	const defaultReducer$: Stream<Reducer<State>> =
 		xs.of(function defaultReducer(prev: State): State {
@@ -140,6 +140,9 @@ function Catalog(sources: Sources): Sinks {
 
 	const catalogReducer$: Stream<Reducer<State>> =
 		xs.merge(defaultReducer$, addToSelectionsReducer$, removeSelectionReducer$)
+
+	// end Reducers
+	// **************************************************
 
 	// merge our dom streams - success, loading, error
 	const vdom$: Stream<VNode> =

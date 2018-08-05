@@ -28,8 +28,10 @@ interface Sources {
 }
 
 function Sportsbook(sources: Sources): Sinks {
-
 	const liveData$ = sources.LiveData
+
+	// we could be better off isolating the sportsbook itself rather than these
+	// two children. albeit they could do with working independently, theoretically at least.
 
 	const catalogSinks = isolate(CatalogComponent, {
 		onion: 'selections',
@@ -44,7 +46,7 @@ function Sportsbook(sources: Sources): Sinks {
 	// deletions from list
 	const betslipOnion$: Stream<Reducer<State>> = betslipSinks.onion
 
-	// th catalog makes http requests. pass these to out sinks.
+	// the catalog makes http requests. pass these to out sinks.
 	const sportsbookHttp$ = catalogSinks.HTTP
 
 	const vdom$: Stream<VNode> =
@@ -67,18 +69,19 @@ function Sportsbook(sources: Sources): Sinks {
 		})
 
 	// apply live data updates to the state
+	// evey time we recieve a live update, run a reducer function against state.
 	const liveDataReducer$: Stream<Reducer<State>> =
 		liveData$.map((liveData: any) =>
 			function liveDataReducer(prev: State): State {
 				return {
-					...prev,
 					selections:
 						prev.selections.map(selection => {
 							if (selection.id === liveData.outcome.id) {
 								return Object.assign({}, selection, {
-									price: parseFloat(liveData.outcome.price) // sort out price type.
+									price: parseFloat(liveData.outcome.price)
 								})
 							}
+
 							return selection
 						})
 					}

@@ -1,4 +1,4 @@
-import { div, VNode, p, DOMSource } from '@cycle/dom'
+import { div, VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
