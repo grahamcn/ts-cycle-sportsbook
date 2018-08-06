@@ -25,7 +25,7 @@ function Sport(sources: Sources): Sinks {
 
 	// transform a stream of an array of competitions to stream of an array of components
 	// simple enough
-	const competitionComponents$: Stream<CompetitionComponentSinks[]> =
+	const competitionComponentsSinks$: Stream<CompetitionComponentSinks[]> =
 		competitions$
 			.map(competitions =>
 				competitions.map(competition =>
@@ -41,20 +41,20 @@ function Sport(sources: Sources): Sinks {
 	// stream of an array of streams of competition component vdoms
 	// simple enough
 	const competitionComponentsDom$$: Stream<Stream<VNode>[]> =
-		competitionComponents$
-			.map((competitionComponents: CompetitionComponentSinks[]) =>
-				competitionComponents
-					.map((competitionComponent: CompetitionComponentSinks) =>
-						competitionComponent.DOM
+    competitionComponentsSinks$
+			.map((competitionComponentsSinks: CompetitionComponentSinks[]) =>
+        competitionComponentsSinks
+					.map((competitionComponentSinks: CompetitionComponentSinks) =>
+            competitionComponentSinks.DOM
 					)
 			)
 
 	// this is the trick here.
 	// transform to a stream of an array of vdoms from a an array of streams of competition component vdoms
-	const competitionComponentDoms$: Stream<VNode[]> =
-		competitionComponentsDom$$
-			.map((eventComponentsDoms$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...eventComponentsDoms$)
+	const competitionComponentsDom$: Stream<VNode[]> =
+    competitionComponentsDom$$
+			.map((competitionComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...competitionComponentsDom$)
 			)
 			.flatten()
 
@@ -62,7 +62,7 @@ function Sport(sources: Sources): Sinks {
 	// simple enough
 	const vdom$ =
 		xs.combine(
-			competitionComponentDoms$,
+			competitionComponentsDom$,
 		).map(([competitionComponentsDom]) =>
 			ul('.list', [
 					...competitionComponentsDom,

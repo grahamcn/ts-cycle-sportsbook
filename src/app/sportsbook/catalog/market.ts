@@ -58,7 +58,7 @@ function MarketComponent(sources: Sources): Sinks {
 					)
 			)
 
-	const outcomeComponentDoms$: Stream<VNode[]> =
+	const outcomeComponentsDom$: Stream<VNode[]> =
 		outcomeComponentsDom$$
 			.map((outcomeComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
 				xs.combine(...outcomeComponentsDom$)
@@ -68,11 +68,11 @@ function MarketComponent(sources: Sources): Sinks {
 	const vdom$: Stream<VNode> =
 		xs.combine(
 			market$,
-			outcomeComponentDoms$,
-		).map(([market, outcomeComponentDoms]) =>
+			outcomeComponentsDom$,
+		).map(([market, outcomeComponentsDom]) =>
 			li('.listItem .market', [
 				ul('.list .inline .market__outcomes', [
-					...outcomeComponentDoms,
+					...outcomeComponentsDom,
 				]),
 			])
 		)

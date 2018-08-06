@@ -127,7 +127,7 @@ function Catalog(sources: Sources): Sinks {
 				function addOneItemReducer(prev: State): State {
 					return [...prev, Object.assign(selection, {
             // we are copyiing an outcome from the dom to the state.
-            // as they outcome in the dom may have a price change property if it has been updated, we don't want to take it to
+            // as they outcome in the dom will have a price change property if it has been updated, we don't want to take it to
             // the selections (as it'll force an animate)
             priceChangeUp: undefined,
             priceChangeDown: undefined, // ditto

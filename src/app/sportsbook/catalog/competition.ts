@@ -24,7 +24,7 @@ function CompetitionComponent(sources: Sources): Sinks {
 
 	// pretty much as per competition, with some data enrichment happening along the way, plus
 	// filtering of live data at event, market, outcome level begins.
-	const eventComponentsDom$: Stream<EventComponentSinks[]> =
+	const eventComponentsSinks$: Stream<EventComponentSinks[]> =
 		competition$
 			.map(competition =>
 				(competition.preLiveEvents || []).concat(competition.liveEvents || [])
@@ -46,27 +46,27 @@ function CompetitionComponent(sources: Sources): Sinks {
 				)
 			)
 
-	const eventComponentsDomDom$$: Stream<Stream<VNode>[]> =
-		eventComponentsDom$
-			.map((eventComponentsDom: EventComponentSinks[]) =>
-				eventComponentsDom
-					.map((eventComponent: EventComponentSinks) =>
-						eventComponent.DOM
+	const eventComponentsDom$$: Stream<Stream<VNode>[]> =
+    eventComponentsSinks$
+			.map((eventComponentsSinks: EventComponentSinks[]) =>
+        eventComponentsSinks
+					.map((eventComponentSinks: EventComponentSinks) =>
+            eventComponentSinks.DOM
 					)
 			)
 
-	const eventComponentDoms$: Stream<VNode[]> =
-		eventComponentsDomDom$$
-			.map((eventComponentsDoms$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...eventComponentsDoms$)
+	const eventComponentsDom$: Stream<VNode[]> =
+    eventComponentsDom$$
+			.map((eventComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...eventComponentsDom$)
 			)
 			.flatten()
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
 			competition$,
-			eventComponentDoms$,
-		).map(([competition, eventComponentDoms]) =>
+			eventComponentsDom$,
+		).map(([competition, eventComponentsDom]) =>
 			li('.listItem .competition', [
 				div('.header', [
 					h2('.heading', competition.name),
@@ -76,7 +76,7 @@ function CompetitionComponent(sources: Sources): Sinks {
 						h3('.heading', 'Date'),
 					]),
 					ul('.list .events', [
-						...eventComponentDoms
+						...eventComponentsDom
 					])
 				])
 			])
