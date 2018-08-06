@@ -23,14 +23,17 @@ function OutcomeComponent(sources: Sources): Sinks {
 	const liveData$ = sources.LiveData
 
 	const liveOutcome$: Stream<Outcome> =
-		outcome$.map(outcome =>
-			liveData$
-				.map(liveData => ({
-					...outcome,
-					price: parseFloat(liveData.outcome.price)
-				}))
-				.startWith(outcome)
-			).flatten()
+    outcome$
+      .map(outcome =>
+        liveData$
+          .fold((acc, curr) => ({
+            ...acc,
+            price: parseFloat(curr.outcome.price), // new price
+            priceChange: acc.price !== parseFloat(curr.outcome.price)
+          }), outcome)
+          .startWith(outcome)
+      )
+      .flatten()
 
 	const vdom$: Stream<VNode> =
 		xs.combine(
