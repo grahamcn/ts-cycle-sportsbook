@@ -1,4 +1,4 @@
-import * as io from 'socket.io-client'
+import * as io from 'socket.io-client/dist/socket.io.slim'
 import {adapt} from '@cycle/run/lib/adapt'
 import xs, { Stream } from 'xstream'
 // import {buffer} from '../app/misc/xstream.extra'
