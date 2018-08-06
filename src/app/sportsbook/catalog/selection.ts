@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { DOMSource, VNode, div, h4, li } from '@cycle/dom'
+import { DOMSource, VNode, div, h4, li, span } from '@cycle/dom'
 import { StateSource, Reducer } from 'cycle-onionify'
 import { Selection } from '../interfaces'
 
@@ -33,10 +33,17 @@ function SelectionCompenent(sources: Sources): Sinks {
 			state$,
 		)
 		.map(([selection]) =>
-			li('.listItem .selection', [
-				div('.price',
-					selection.price,
-				),
+			li(`.listItem .selection ${selection.priceChangeUp || selection.priceChangeDown ? `priceTo-${selection.price * 100}` : ''}`, {
+        class: {
+          priceChange: selection.priceChangeUp || selection.priceChangeDown,
+        },
+      }, [
+        div('.selection__price', [
+          div('.price', {
+            },
+            selection.price,
+          ),
+        ]),
 				div('.selection__details', [
 					div('.selection__outcome', selection.name),
 					div('.selection__market', selection.marketName),

@@ -29,7 +29,8 @@ function OutcomeComponent(sources: Sources): Sinks {
           .fold((acc, curr) => ({
             ...acc,
             price: parseFloat(curr.outcome.price), // new price
-            priceChange: acc.price !== parseFloat(curr.outcome.price)
+            priceChangeUp: acc.price < parseFloat(curr.outcome.price),
+            priceChangeDown: acc.price > parseFloat(curr.outcome.price)
           }), outcome)
           .startWith(outcome)
       )
@@ -40,18 +41,19 @@ function OutcomeComponent(sources: Sources): Sinks {
 			liveOutcome$,
 			state$,
 		).map(([outcome, selections]: any) =>
-			li('.listItem .outcome', {
+			li(`.listItem .outcome ${outcome.priceChangeUp || outcome.priceChangeDown && `priceTo-${outcome.price * 100}`}`, { // force class to change
 				class: {
-					selected: selections.map(s => s.id).indexOf(outcome.id) > -1,
+          selected: selections.map(s => s.id).indexOf(outcome.id) > -1,
+          priceChange: outcome.priceChangeUp || outcome.priceChangeDown,
 				},
 				dataset: {
 					dataOutcome: JSON.stringify(outcome),
 				}
 			}, [
 				div('.outcome__label', outcome.name),
-				div(
+				div('.outcome__price', [
 					div('.price', outcome.price)
-				)
+        ])
 			])
 		)
 

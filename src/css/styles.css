@@ -15,6 +15,24 @@ html {
   height: 100%;
 }
 
+/* price change keyframe animations*/
+@keyframes priceChangeKeyFrames {
+  0% {
+    background-color: #e4b30b;
+    color: #fff;
+  }
+  99% {
+    background-color: #e4b30b;
+    color: #fff;
+  }
+  100% {
+    background-color: inherit;
+    color: inherit;
+  }
+}
+
+
+
 /* Type */
 
 @font-face {
@@ -231,7 +249,8 @@ h1, h2, h3, h4, h5, h6 {
 	justify-content: center;
 	align-items: center;
 	width: 80px;
-	overflow: hidden;
+  overflow: hidden;
+  cursor: pointer;
 }
 
 .outcome__label {
@@ -239,8 +258,8 @@ h1, h2, h3, h4, h5, h6 {
 	overflow: hidden;
 }
 
-.outcome.selected {
-	background-color: #1fa94a;
+.outcome__price {
+  margin-top: 3px;
 }
 
 /* Betslip */
@@ -276,11 +295,12 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
 	justify-content: flex-start;
 	align-items: center;
-  padding: 16px;
+  padding: 16px 16px 16px 8px;
   border-bottom: 1px solid #e1e4e9;
 }
 
 .selection__details {
+  margin-left: 8px;
   flex: 1;
 }
 
@@ -303,29 +323,37 @@ h1, h2, h3, h4, h5, h6 {
   cursor: pointer;
 }
 
-/* Price */
+.selection__price {
+  width: 60px;
+  display: flex;
+  justify-content: center;
+}
 
+.selection > .price {
+  min-width: 66px;
+  display: inline;
+}
+
+.selection.priceChange .price {
+  background-image: none !important;
+  animation: priceChangeKeyFrames 2s ease-in-out;
+}
+
+/* Price */
 .price {
+  border-radius: 12px;
   padding: 4px 8px;
   font-weight: 500;
-	user-select: none;
-	width: 60px;
+  user-select: none;
+  display: inline;
 }
 
-.price--clickable {
-  cursor: pointer;
-}
-
-.price--clicked,
-.price--updated {
-  border-radius: 12px;
+.outcome.selected .price {
+  background: #1fa94a;
   color: #fff;
 }
 
-.price--clicked {
-  background: #1fa94a;
-}
-
-.price--updated {
-  background: #e4b30b;
+.outcome.priceChange .price {
+    background-image: none !important;
+    animation: priceChangeKeyFrames 2s ease-in-out;
 }

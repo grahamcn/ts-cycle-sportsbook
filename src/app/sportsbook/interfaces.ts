@@ -67,9 +67,10 @@ export interface Outcome {
 	eventUrlName: string
 
 	marketId: string
-	marketName: string
+  marketName: string
 
-	selected?: boolean // idea
+  priceChangeUp?: boolean
+  priceChangeDown?: boolean
 }
 
 export interface Selection extends Outcome {
