@@ -1,4 +1,4 @@
-import { VNode, DOMSource, ul } from '@cycle/dom'
+import { VNode, DOMSource, ul, p } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
@@ -25,7 +25,7 @@ function Sport(sources: Sources): Sinks {
 
 	// transform a stream of an array of competitions to stream of an array of components
 	// simple enough
-	const competitionComponentsSinks$: Stream<CompetitionComponentSinks[]> =
+	const competitionComponentSinks$: Stream<CompetitionComponentSinks[]> =
 		competitions$
 			.map(competitions =>
 				competitions.map(competition =>
@@ -40,21 +40,21 @@ function Sport(sources: Sources): Sinks {
 
 	// stream of an array of streams of competition component vdoms
 	// simple enough
-	const competitionComponentsDom$$: Stream<Stream<VNode>[]> =
-    competitionComponentsSinks$
+	const competitionComponentDoms$$: Stream<Stream<VNode>[]> =
+		competitionComponentSinks$
 			.map((competitionComponentsSinks: CompetitionComponentSinks[]) =>
-        competitionComponentsSinks
+				competitionComponentsSinks
 					.map((competitionComponentSinks: CompetitionComponentSinks) =>
-            competitionComponentSinks.DOM
+						competitionComponentSinks.DOM
 					)
 			)
 
 	// this is the trick here.
 	// transform to a stream of an array of vdoms from a an array of streams of competition component vdoms
 	const competitionComponentsDom$: Stream<VNode[]> =
-    competitionComponentsDom$$
-			.map((competitionComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...competitionComponentsDom$)
+		competitionComponentDoms$$
+			.map((competitionComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...competitionComponentDoms$)
 			)
 			.flatten()
 
@@ -64,10 +64,12 @@ function Sport(sources: Sources): Sinks {
 		xs.combine(
 			competitionComponentsDom$,
 		).map(([competitionComponentsDom]) =>
-			ul('.list', [
+			competitionComponentsDom.length === 0 ?
+				p('No competitions found for sport') :
+				ul('.list', [
 					...competitionComponentsDom,
 				])
-			)
+		)
 
 	return {
 		DOM: vdom$,

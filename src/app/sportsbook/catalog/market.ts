@@ -23,7 +23,7 @@ function MarketComponent(sources: Sources): Sinks {
 	const liveData$ = sources.LiveData
 
 	// create a lens such that the outcome gets a selected status
-	const outcomeComponentsSinks$: Stream<OutcomeComponentSinks[]> =
+	const outcomeComponentSinks$: Stream<OutcomeComponentSinks[]> =
 		market$
 			.map(market =>
 				market.outcomes.map(outcome =>
@@ -49,8 +49,8 @@ function MarketComponent(sources: Sources): Sinks {
 			)
 		)
 
-	const outcomeComponentsDom$$: Stream<Stream<VNode>[]> =
-		outcomeComponentsSinks$
+	const outcomeComponentDoms$$: Stream<Stream<VNode>[]> =
+		outcomeComponentSinks$
 			.map((outcomeComponentsSinks: OutcomeComponentSinks[]) =>
 				outcomeComponentsSinks
 					.map((outcomeComponentSinks: OutcomeComponentSinks) =>
@@ -59,9 +59,9 @@ function MarketComponent(sources: Sources): Sinks {
 			)
 
 	const outcomeComponentsDom$: Stream<VNode[]> =
-		outcomeComponentsDom$$
-			.map((outcomeComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...outcomeComponentsDom$)
+		outcomeComponentDoms$$
+			.map((outcomeComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...outcomeComponentDoms$)
 			)
 			.flatten()
 

@@ -22,7 +22,7 @@ function EventComponent(sources: Sources): Sinks {
 	const event$ = sources.event$
 	const liveData$ = sources.LiveData
 
-	const marketComponentsSinks$: Stream<MarketComponentSinks[]> =
+	const marketComponentSinks$: Stream<MarketComponentSinks[]> =
 		event$
 			.map(event =>
 					event.markets.map(market =>
@@ -44,8 +44,8 @@ function EventComponent(sources: Sources): Sinks {
 				)
 			)
 
-	const marketComponentsDom$$: Stream<Stream<VNode>[]> =
-		marketComponentsSinks$
+	const marketComponentDoms$$: Stream<Stream<VNode>[]> =
+		marketComponentSinks$
 			.map((marketComponentsSinks: MarketComponentSinks[]) =>
 				marketComponentsSinks
 					.map((marketComponentSinks: MarketComponentSinks) =>
@@ -54,9 +54,9 @@ function EventComponent(sources: Sources): Sinks {
 			)
 
 	const marketComponentsDom$: Stream<VNode[]> =
-		marketComponentsDom$$
-			.map((marketComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...marketComponentsDom$)
+		marketComponentDoms$$
+			.map((marketComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...marketComponentDoms$)
 			)
 			.flatten()
 

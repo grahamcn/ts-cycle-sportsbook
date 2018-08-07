@@ -5,7 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Competition, Selection } from '../interfaces'
 import EventComponent, { Sinks as EventComponentSinks } from './event'
 
-interface State extends Array<Selection> {}
+interface State extends Array<Selection> { }
 
 export interface Sinks {
 	DOM: Stream<VNode>,
@@ -24,7 +24,7 @@ function CompetitionComponent(sources: Sources): Sinks {
 
 	// pretty much as per competition, with some data enrichment happening along the way, plus
 	// filtering of live data at event, market, outcome level begins.
-	const eventComponentsSinks$: Stream<EventComponentSinks[]> =
+	const eventComponentSinks$: Stream<EventComponentSinks[]> =
 		competition$
 			.map(competition =>
 				(competition.preLiveEvents || []).concat(competition.liveEvents || [])
@@ -43,22 +43,22 @@ function CompetitionComponent(sources: Sources): Sinks {
 								return d && d.outcome.eventId === event.id
 							}),
 						})
-				)
+					)
 			)
 
-	const eventComponentsDom$$: Stream<Stream<VNode>[]> =
-    eventComponentsSinks$
+	const eventComponentDoms$$: Stream<Stream<VNode>[]> =
+		eventComponentSinks$
 			.map((eventComponentsSinks: EventComponentSinks[]) =>
-        eventComponentsSinks
+				eventComponentsSinks
 					.map((eventComponentSinks: EventComponentSinks) =>
-            eventComponentSinks.DOM
+						eventComponentSinks.DOM
 					)
 			)
 
 	const eventComponentsDom$: Stream<VNode[]> =
-    eventComponentsDom$$
-			.map((eventComponentsDom$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...eventComponentsDom$)
+		eventComponentDoms$$
+			.map((eventComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
+				xs.combine(...eventComponentDoms$)
 			)
 			.flatten()
 
