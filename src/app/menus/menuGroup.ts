@@ -22,7 +22,7 @@ function GroupedMenus(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
 	const toggleMenuLens = {
-		get: (state: State) => state.groups
+		get: (state: State) => state.menu
 	}
 
 	const ToggleMenuList: any = makeCollection({

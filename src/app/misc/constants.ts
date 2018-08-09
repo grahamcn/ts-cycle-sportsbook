@@ -2,7 +2,7 @@ export const defaultSecondarySegment = 'calcio'
 export const baseUrl = 'https://vkyyqd7276.execute-api.eu-west-2.amazonaws.com/public/catalog'
 export const socketUrl = 'http://ec2-18-130-224-107.eu-west-2.compute.amazonaws.com:8000'
 
-import { MenuItem } from '../menus/interfaces'
+import { Menu, MenuItem } from '../menus/interfaces'
 
 export const containerMenuData: MenuItem[] = [{
 	title: 'Home',
@@ -21,8 +21,9 @@ export const containerMenuData: MenuItem[] = [{
 	url: '/rollerball'
 }]
 
-export function staticTertiaryMenuItems(secondaryKey: string): MenuItem[] {
-	return [{
+// menu functions operate on a listof menus, hence the wrapping array.
+export function staticTertiaryMenus(secondaryKey: string): Menu[] {
+	const menuItems: MenuItem[] =  [{
 		title: 'Home',
 		url: `/${secondaryKey}`
 	}, {
@@ -40,5 +41,14 @@ export function staticTertiaryMenuItems(secondaryKey: string): MenuItem[] {
 	}, {
 		title: 'Weekend',
 		url: `/${secondaryKey}/weekend`,
-	}]
+  }]
+
+  if (secondaryKey === 'rugby') {
+    menuItems.splice(1, 1) // remove live
+  }
+
+  return [{
+    title: 'static menu',
+    items: menuItems
+  }]
 }

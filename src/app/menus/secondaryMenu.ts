@@ -3,7 +3,7 @@ import { div, VNode, ul, li, a, DOMSource } from '@cycle/dom'
 
 import { containerMenuData } from '../misc/constants'
 import { getTargetDataUrl } from '../misc/helpers'
-import { MenuItem } from './interfaces'
+import { Link } from './interfaces'
 
 export interface Sources {
 	DOM: DOMSource
@@ -15,7 +15,6 @@ export interface Sinks {
 }
 
 function SecondaryMenu(sources): Sinks {
-
 	const history$ =
 		sources.DOM.select('.secondaryMenu .link')
 			.events('click')
@@ -26,7 +25,7 @@ function SecondaryMenu(sources): Sinks {
 			.map(data =>
 				div('.secondaryMenu',
 					ul('.list .inline',
-						data.map((menuItem: MenuItem) =>
+						data.map((menuItem: Link) =>
 							li('.listItem',
 								a('.link', {
 									attrs: {

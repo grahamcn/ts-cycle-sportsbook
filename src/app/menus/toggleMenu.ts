@@ -3,7 +3,7 @@ import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { Menu } from './interfaces'
-import SimpleMenu from './SimpleMenu'
+import MenuComponent from './menu'
 import isolate from '@cycle/isolate'
 
 const openState = {
@@ -56,7 +56,7 @@ function ToggleMenu(sources: Sources): Sinks {
 			items: state.items
 		})
 	}
-	const Menu = isolate(SimpleMenu, {onion: menuLens})(sources)
+	const Menu = isolate(MenuComponent, {onion: menuLens})(sources)
 	const menuDom$: Stream<VNode> = Menu.DOM
 	const menuHistory$: Stream<string> = Menu.History
 

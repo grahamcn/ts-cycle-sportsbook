@@ -1,7 +1,7 @@
 import {
 	defaultSecondarySegment,
 	baseUrl,
-	staticTertiaryMenuItems,
+	staticTertiaryMenus,
 } from './constants'
 
 import { MenuItem, Menu } from '../menus/interfaces'
@@ -98,7 +98,7 @@ export function transformToMenuGroups(menuData): Array<any> {
 
 	return [{
 		id: 1,
-		items: staticTertiaryMenuItems(secondarySegmentUrl),
+		items: staticTertiaryMenus(secondarySegmentUrl),
 	}, {
 		id: 2,
 		title: 'In Evidenza',
@@ -107,6 +107,47 @@ export function transformToMenuGroups(menuData): Array<any> {
 		id: 3,
 		title: 'Tutte Le Competizioni',
 		groups: tutteLeCompetizioniMenus,
+	}]
+}
+
+export function transformDynamicMenuDataToMenus(menuData): Array<Menu> {
+	const secondarySegmentUrl = menuData.data.urlName
+
+	const inEvidenzaMenuItems =
+		menuData.data.types
+			.slice(0, 5)
+			.map(({ urlName, name }) => {
+				return {
+					title: name.split(' - ')[1].trim(),
+					url: `/${secondarySegmentUrl}/${urlName}`,
+				}
+			})
+
+	const tutteLeCompetizioniMenuItems: Map<string, MenuItem[]> =
+		[menuData]
+			.map(pick('data'))
+			.map(pick('types'))
+			.map((competitions: Array<any>) => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
+			.map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
+
+	// convert the map to an array of Menus - probably possible to simplify the above
+	const tutteLeCompetizioniMenus: Menu[] = []
+	tutteLeCompetizioniMenuItems.forEach((value, key) => {
+		tutteLeCompetizioniMenus.push({
+			id: key,
+			title: key,
+			items: value
+		})
+	})
+
+	return [{
+		id: 1,
+		title: 'In Evidenza',
+		items: inEvidenzaMenuItems,
+	}, {
+		id: 2,
+		title: 'Tutte Le Competizioni',
+		items: tutteLeCompetizioniMenus,
 	}]
 }
 
