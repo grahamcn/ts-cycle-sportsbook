@@ -5,6 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Event, Selection } from '../interfaces'
 import MarketComponent, { Sinks as MarketComponentSinks } from './market'
 import { renderEvent } from '../../misc/helpers.dom'
+import { transformArrayOfStreamsToStreamOfArrays, transformCatCompSinksToArrayOfStreamsOfVdoms } from '../../misc/helpers.xs';
 
 export interface State extends Array<Selection> {}
 
@@ -45,20 +46,10 @@ function EventComponent(sources: Sources): Sinks {
 				)
 			)
 
-	const marketComponentDoms$$: Stream<Stream<VNode>[]> =
-		marketComponentSinks$
-			.map((marketComponentsSinks: MarketComponentSinks[]) =>
-				marketComponentsSinks
-					.map((marketComponentSinks: MarketComponentSinks) =>
-						marketComponentSinks.DOM
-					)
-			)
-
 	const marketComponentsDom$: Stream<VNode[]> =
-		marketComponentDoms$$
-			.map((marketComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...marketComponentDoms$)
-			)
+		marketComponentSinks$
+			.map(transformCatCompSinksToArrayOfStreamsOfVdoms)
+			.map(transformArrayOfStreamsToStreamOfArrays)
 			.flatten()
 
 	const vdom$: Stream<VNode> =

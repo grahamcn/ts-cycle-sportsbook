@@ -1,9 +1,10 @@
-import { div, VNode, h3, span, ul } from '@cycle/dom'
+import { VNode } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource, makeCollection, Reducer } from 'cycle-onionify'
 
 import { Selection } from '../interfaces'
 import SelectionComponent from '../catalog/selection'
+import { renderBetslip } from '../../misc/helpers.dom'
 
 interface State extends Array<Selection> {}
 
@@ -37,21 +38,9 @@ function Betslip(sources: Sources): Sinks {
 	// "😸"
 	const vdom$: Stream<VNode> =
 		xs.combine(
-			state$,
+			state$.map(state => state.length),
 			listSinksDOM$,
-		).map(([state, listSinksDOM]) =>
-			div('.betslip', [ // list
-				div('.header', [
-					h3('.heading', [
-						!state.length ? undefined : span('.count', `${state.length} `),
-						span('Betslip'),
-					]),
-				]),
-				ul('.list', [
-					...listSinksDOM
-				])
-			])
-		)
+		).map(renderBetslip)
 
 	return {
 		DOM: vdom$,

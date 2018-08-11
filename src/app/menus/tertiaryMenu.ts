@@ -1,4 +1,4 @@
-import { div, VNode, ul, DOMSource, li } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -21,6 +21,12 @@ import {
 
 import MenuComponent from './menu'
 import { Menu } from './interfaces'
+import {
+	renderTertiaryMenu,
+	renderListItem,
+	renderLoading,
+	renderDataError
+} from '../misc/helpers.dom'
 
 
 interface State {
@@ -100,10 +106,6 @@ function TertiaryMenu(sources: Sources): Sinks {
 	const staticMenusHistory$: Stream<string> = staticMenusSinks.History
 
 	// dynamic menu list
-	const dynamicMenusListLens = {
-		get: (state: State) => state.dynamicMenus,
-	}
-
 	const DynamicMenusList: any = makeCollection({
 		item: MenuComponent,
 		itemKey: (item: any) => item.id,
@@ -116,7 +118,7 @@ function TertiaryMenu(sources: Sources): Sinks {
 		}
 	})
 
-	const dynamicMenusSinks = isolate(DynamicMenusList, { onion: dynamicMenusListLens })(sources) // list idetifies the part of state of loop over
+	const dynamicMenusSinks = isolate(DynamicMenusList, 'dynamicMenus')(sources) // list idetifies the part of state of loop over
 	const dynamicMenusDom$: Stream<Array<VNode>> = dynamicMenusSinks.DOM
 	const dynamicMenusHistory$: Stream<string> = dynamicMenusSinks.History
 
@@ -124,19 +126,11 @@ function TertiaryMenu(sources: Sources): Sinks {
 		secondaryDataKey$ // ie when this emits, we display the loading indicator
 			.compose(dropRepeats())
 			// map to an array of li as we're using this interchangeably with dynamic menu dom, which is an array of vnodes
-			.mapTo([
-				li('.listItem',
-					div('.loading', 'loading...')
-				)
-			])
+			.mapTo([renderListItem(renderLoading())])
 
 	const errorMenuDom$: Stream<VNode> =
 		errorMenuData$
-		.mapTo([
-			li('.listItem',
-				div('.error', 'error loading dynamic menu')
-			)
-		])
+		.mapTo([renderListItem(renderDataError())])
 
 	const dynamicDom$ =
 		xs.merge(
@@ -150,12 +144,7 @@ function TertiaryMenu(sources: Sources): Sinks {
 		xs.combine(
 			staticMenusDom$,
 			dynamicDom$,
-		).map(([staticMenusDom, dynamicDom]) =>
-			div('.tertiaryMenu', [
-				ul('.list', staticMenusDom),
-				ul('.list', dynamicDom),
-			])
-		)
+		).map(renderTertiaryMenu)
 
 	// Reducer / state - two streams change state, the dstatic menu items and the dynamic menu  items.
 	// The view is derive from state

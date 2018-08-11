@@ -1,5 +1,5 @@
 import { VNode, DOMSource } from '@cycle/dom'
-import xs, { Stream } from 'xstream'
+import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { MenuLink } from './interfaces'

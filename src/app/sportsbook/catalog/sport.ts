@@ -6,6 +6,7 @@ import { Competition } from '../interfaces'
 import { Selection } from '../interfaces'
 import CompetitionComponent, { Sinks as CompetitionComponentSinks } from './competition'
 import { renderSport } from '../../misc/helpers.dom'
+import { transformArrayOfStreamsToStreamOfArrays, transformCatCompSinksToArrayOfStreamsOfVdoms } from '../../misc/helpers.xs';
 
 export interface State extends Array<Selection> { }
 
@@ -45,17 +46,8 @@ function Sport(sources: Sources): Sinks {
 
 	const competitionComponentsDom$: Stream<VNode[]> =
 		competitionComponentSinks$
-			.map((competitionComponentsSinks: CompetitionComponentSinks[]) =>
-				competitionComponentsSinks
-					.map((competitionComponentSinks: CompetitionComponentSinks) =>
-						competitionComponentSinks.DOM
-					)
-			)
-			// this is the trick here.
-			// transform to a stream of an array of vdoms from a an array of streams of competition component vdoms
-			.map((competitionComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...competitionComponentDoms$)
-			)
+			.map(transformCatCompSinksToArrayOfStreamsOfVdoms)
+			.map(transformArrayOfStreamsToStreamOfArrays)
 			.flatten()
 
 	/// back to what we've seen before.

@@ -32,3 +32,16 @@ export function simpleHttpResponseReplaceError(response$) {
 		})
 	})
 }
+
+// transform stream of catalog component sinks to stream of array of streams of vnodes.
+export function transformCatCompSinksToArrayOfStreamsOfVdoms(catalogComponentsSinks: CatalogComponentSinks[]): Stream<VNode>[] {
+	return catalogComponentsSinks
+		.map((catalogComponentsSink: CatalogComponentSinks) =>
+			catalogComponentsSink.DOM
+		)
+}
+
+// helper for the above for the second transformation in the consumer of these two
+export function transformArrayOfStreamsToStreamOfArrays(arrayOfStreams$: Stream<any>[]): Stream<any[]> {
+	return xs.combine(...arrayOfStreams$)
+}

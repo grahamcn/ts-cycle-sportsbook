@@ -1,10 +1,11 @@
-import { VNode, ul, li, div, span, DOMSource } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 import isolate from '@cycle/isolate'
 
 import { Menu } from './interfaces'
 import MenuComponent from './menu'
+import { renderMenuGroup } from '../misc/helpers.dom'
 
 const openState = {
 	open: true,
@@ -62,21 +63,10 @@ function MenuGroup(sources: Sources): Sinks {
 
 	const vdom$ =
 		xs.combine(
-			state$,
+			state$.map(({title}) => title),
 			toggleState$,
 			menuDom$,
-		).map(([state, toggleState, menuDom]) =>
-				li('.listItem', [
-					div(toggleState.classes.join(' '), [
-						state.title,
-						span(toggleState.arrow)
-					]),
-					!toggleState.open ? undefined :
-						ul('.list', [
-							menuDom,
-						])
-				])
-		)
+		).map(renderMenuGroup)
 
 	return {
 		DOM: vdom$,

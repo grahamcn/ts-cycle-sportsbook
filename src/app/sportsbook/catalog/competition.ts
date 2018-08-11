@@ -5,6 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Competition, Selection } from '../interfaces'
 import EventComponent, { Sinks as EventComponentSinks } from './event'
 import { renderCompetition } from '../../misc/helpers.dom'
+import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs';
 
 interface State extends Array<Selection> { }
 
@@ -47,20 +48,28 @@ function CompetitionComponent(sources: Sources): Sinks {
 					)
 			)
 
-	const eventComponentDoms$$: Stream<Stream<VNode>[]> =
-		eventComponentSinks$
-			.map((eventComponentsSinks: EventComponentSinks[]) =>
-				eventComponentsSinks
-					.map((eventComponentSinks: EventComponentSinks) =>
-						eventComponentSinks.DOM
-					)
-			)
+	// pre refactor, which will be easier to follow.
+	// ******************************************************
+	// const eventComponentDoms$$: Stream<Stream<VNode>[]> =
+	// 	eventComponentSinks$
+	// 		.map((eventComponentsSinks: EventComponentSinks[]) =>
+	// 			eventComponentsSinks
+	// 				.map((eventComponentSinks: EventComponentSinks) =>
+	// 					eventComponentSinks.DOM
+	// 				)
+	// 		)
+
+	// const eventComponentsDom$: Stream<VNode[]> =
+	// 	eventComponentDoms$$
+	// 		.map((eventComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
+	// 			xs.combine(...eventComponentDoms$)
+	// 		)
+	// 		.flatten()
 
 	const eventComponentsDom$: Stream<VNode[]> =
-		eventComponentDoms$$
-			.map((eventComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
-				xs.combine(...eventComponentDoms$)
-			)
+		eventComponentSinks$
+			.map(transformCatCompSinksToArrayOfStreamsOfVdoms)
+			.map(transformArrayOfStreamsToStreamOfArrays)
 			.flatten()
 
 	const vdom$: Stream<VNode> =

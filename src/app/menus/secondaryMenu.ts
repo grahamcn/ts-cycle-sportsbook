@@ -1,9 +1,9 @@
-import xs, { Stream } from 'xstream';
-import { div, VNode, ul, DOMSource } from '@cycle/dom'
+import xs, { Stream } from 'xstream'
+import { VNode, DOMSource } from '@cycle/dom'
 
 import { containerMenuData } from '../misc/constants'
 import { getTargetDataUrl } from '../misc/helpers'
-import { renderMenuLink } from '../misc/helpers.dom'
+import { renderSecondaryMenu } from '../misc/helpers.dom'
 
 export interface Sources {
 	DOM: DOMSource
@@ -22,13 +22,7 @@ function SecondaryMenu(sources): Sinks {
 
 	const vdom$ =
 		xs.of(containerMenuData)
-			.map(data =>
-				div('.secondaryMenu',
-					ul('.list .inline',
-						data.map(renderMenuLink)
-					)
-				)
-			)
+			.map(renderSecondaryMenu)
 
 	return {
 		DOM: vdom$,

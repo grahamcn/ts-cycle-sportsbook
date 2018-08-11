@@ -1,6 +1,18 @@
 import { MenuLink } from '../menus/interfaces'
-import { li, a, VNode, div, ul, h2, h3, p } from '@cycle/dom'
+import { li, a, VNode, div, ul, h2, h3, p, span, h1 } from '@cycle/dom'
 import { Selection, Outcome, Event, Competition, Market } from '../sportsbook/interfaces'
+
+export function renderListItem(dom: VNode): VNode {
+	return li('.listItem', dom)
+}
+
+export function renderDataError(err?: string): VNode {
+	return div('.error', err  || 'error loading dynamic data')
+}
+
+export function renderLoading(): VNode {
+	return div('.loading', 'loading')
+}
 
 export function renderMenu([title, menuItemListDom]: [string, VNode[]]): VNode {
 	return div('.menu', [
@@ -11,8 +23,20 @@ export function renderMenu([title, menuItemListDom]: [string, VNode[]]): VNode {
 	])
 }
 
+export function renderMenuGroup([title, groupState, menuDom]) {
+	return li('.listItem', [
+	div(groupState.classes.join(' '), [
+		title,
+		span(groupState.arrow)
+	]),
+	!groupState.open ? undefined :
+		ul('.list', [
+			menuDom,
+		])
+])
+}
 export function renderMenuLink(item: MenuLink): VNode {
-	return li('.listItem', renderLink(item.url, item.title))
+	return renderListItem(renderLink(item.url, item.title))
 }
 
 export function renderLink(url, title): VNode {
@@ -64,11 +88,11 @@ export function renderOutcome(outcome: Outcome): VNode {
 			dataOutcome: JSON.stringify(outcome),
 		}
 	}, [
-		div('.outcome__label', outcome.name),
-		div('.outcome__price', [
-			div('.price', outcome.price)
+			div('.outcome__label', outcome.name),
+			div('.outcome__price', [
+				div('.price', outcome.price)
+			])
 		])
-	])
 }
 
 export function renderMarket([market, outcomeComponentsDom]: [Market, VNode[]]): VNode {
@@ -113,3 +137,59 @@ export function renderSport([competitionComponentsDom]: [VNode[]]): VNode {
 		])
 }
 
+export function renderSportsbook([catalogDom, betslipDom]: [VNode, VNode]): VNode {
+	return div('.sportsbook', [
+		catalogDom,
+		betslipDom,
+	])
+}
+
+export function renderBetslip([count, selectionsDom]: [number, VNode[]]): VNode {
+	return div('.betslip', [
+		div('.header', [
+			h3('.heading', [
+				!count ? undefined : span('.count', `${count} `),
+				span('Betslip'),
+			]),
+		]),
+		ul('.list', [
+			...selectionsDom
+		])
+	])
+}
+
+export function renderCatalog(dom: VNode): VNode {
+	return div('.catalog', [
+		dom,
+	])
+}
+
+export function renderSecondaryMenu(links: MenuLink[]): VNode {
+	return div('.secondaryMenu',
+		ul('.list .inline',
+			links.map(renderMenuLink)
+		)
+	)
+}
+
+export function renderTertiaryMenu([staticMenusDom, dynamicDom]: [VNode[], VNode[]]): VNode {
+	return div('.tertiaryMenu', [
+		ul('.list', staticMenusDom),
+		ul('.list', dynamicDom),
+	])
+}
+
+export function renderApp([secondaryMenuDom, tertiaryMenuDom, sportsbookDom]) {
+	return div('.container', [
+		div('.head', [
+			div('.header',
+				h1('.heading', 'Sky Bet POC')
+			),
+		]),
+		secondaryMenuDom,
+		div('.content', [
+			tertiaryMenuDom,
+			sportsbookDom,
+		])
+])
+}

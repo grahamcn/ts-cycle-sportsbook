@@ -1,5 +1,5 @@
 import xs, { Stream } from 'xstream'
-import { div, VNode, DOMSource, h1 } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { Location } from '@cycle/history'
 import { StateSource, Reducer } from 'cycle-onionify'
@@ -10,6 +10,7 @@ import '../css/styles.css'
 import TertiaryMenu from './menus/tertiaryMenu'
 import Sportsbook from './sportsbook'
 import SecondaryMenu from './menus/secondaryMenu'
+import { renderApp } from './misc/helpers.dom'
 
 interface State {}
 
@@ -64,20 +65,7 @@ function App(sources: Sources): Sinks {
 			secondaryMenuDom$,
 			tertiaryMenuDom$,
 			sportsbookDom$,
-		).map(([secondaryMenuDom, tertiaryMenuDom, sportsbookDom]) =>
-			div('.container', [
-				div('.head', [
-					div('.header',
-						h1('.heading', 'Sky Bet POC')
-					),
-				]),
-				secondaryMenuDom,
-				div('.content', [
-					tertiaryMenuDom,
-					sportsbookDom,
-				])
-			])
-		)
+		).map(renderApp)
 
 	return {
 		DOM: vdom$,

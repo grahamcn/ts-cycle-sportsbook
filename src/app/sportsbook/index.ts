@@ -1,4 +1,4 @@
-import { div, VNode, DOMSource } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -9,6 +9,7 @@ import Betslip from './betslip'
 
 import CatalogComponent from './catalog'
 import { Selection } from './interfaces'
+import { renderSportsbook } from '../misc/helpers.dom'
 
 interface State {
 	selections: Selection[]
@@ -54,12 +55,7 @@ function Sportsbook(sources: Sources): Sinks {
 		xs.combine(
 			catalogDom$,
 			betslipDom$,
-		).map(([catalogDom, betslipDom]) =>
-			div('.sportsbook', [
-				catalogDom,
-				betslipDom,
-			])
-		)
+		).map(renderSportsbook)
 
 	// State
 	const defaultReducer$: Stream<Reducer<State>> =

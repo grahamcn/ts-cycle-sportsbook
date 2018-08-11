@@ -1,4 +1,4 @@
-import { div, VNode, DOMSource } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -14,6 +14,7 @@ import { simpleHttpResponseReplaceError } from '../../misc/helpers.xs'
 import { dropRepeats } from '../../misc/xstream.extra'
 import { Catalog, Selection } from '../interfaces'
 import Sport from './sport'
+import { renderCatalog, renderLoading, renderDataError } from '../../misc/helpers.dom';
 
 interface State extends Array<Selection> { }
 
@@ -82,13 +83,13 @@ function Catalog(sources: Sources): Sinks {
 	// every time we recieve an error response, we map that to a piece of Dom that says error.
 	const errorPageDom$: Stream<VNode> =
 		unsuccessfulCatalogDataResponse$
-			.map(res => div('.catalog', res.err.message))
+			.map(renderDataError('No data found for sport'))
 
 	// every time we requst new data, we map that to a piece of Dom that says loading...
 	const loadingDom$: Stream<VNode> =
 		catalogDataUrl$ // ie when this emits, we display the loading indicator
 			.compose(dropRepeats())
-			.mapTo(div('.catalog', 'loading...'))
+			.mapTo(renderLoading())
 
 	// successful page data is mapped to a sport component vdom
 	const successPageDom$: Stream<VNode> =
@@ -153,16 +154,11 @@ function Catalog(sources: Sources): Sinks {
 
 	// merge our dom streams - success, loading, error
 	const vdom$: Stream<VNode> =
-		xs.merge( // will essentially emit the most recent from these streams
+		xs.merge( // will emit the most recent from these streams
 			successPageDom$, // stream  of competition doms
-			loadingDom$, // stream of loading...
+			loadingDom$, // stream of 'loading...'
 			errorPageDom$, // stream of loading errors
-		)
-			.map((dom: VNode) =>
-				div('.catalog', [
-					dom,
-				])
-			)
+		).map(renderCatalog)
 
 	// return Catalog sinks
 	return {
