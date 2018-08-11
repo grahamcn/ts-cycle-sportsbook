@@ -27,8 +27,7 @@ function SelectionCompenent(sources: Sources): Sinks {
 				return undefined
 			})
 
-	const reducer$: Stream<Reducer<State>> =
-		xs.merge(deleteReducer$)
+	const reducer$: Stream<Reducer<State>> = deleteReducer$
 
 	const vdom$: Stream<VNode> =
 		state$.map(renderSelection)

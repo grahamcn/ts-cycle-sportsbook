@@ -6,6 +6,7 @@ import { Competition, Selection } from '../interfaces'
 import EventComponent, { Sinks as EventComponentSinks } from './event'
 import { renderCompetition } from '../../misc/helpers.dom'
 import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs';
+import { competitionEvents } from '../../misc/helpers.data'
 
 interface State extends Array<Selection> { }
 
@@ -29,7 +30,7 @@ function CompetitionComponent(sources: Sources): Sinks {
 	const eventComponentSinks$: Stream<EventComponentSinks[]> =
 		competition$
 			.map(competition =>
-				(competition.preLiveEvents || []).concat(competition.liveEvents || [])
+				competitionEvents(competition)
 					.map(event =>
 						EventComponent({
 							DOM: sources.DOM,

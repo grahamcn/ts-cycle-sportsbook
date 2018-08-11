@@ -40,7 +40,7 @@ function App(sources: Sources): Sinks {
 	const tertiaryMenuReducer$: Stream<Reducer<State>> = tertiaryMenuSinks.onion
 	const tertiaryMenuHistory$: Stream<string> = tertiaryMenuSinks.History
 
-	const sportsbookSinks = isolate(Sportsbook, 'sportsbook')(sources)
+	const sportsbookSinks = isolate(Sportsbook)(sources)
 	const sportsbookDom$: Stream<VNode> = sportsbookSinks.DOM
 	const sportsbookHttp$: Stream<RequestInput> = sportsbookSinks.HTTP
 	const sportsbookOnion$: Stream<Reducer<State>> = sportsbookSinks.onion

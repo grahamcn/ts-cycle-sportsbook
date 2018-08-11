@@ -5,3 +5,7 @@ export function fixPageData(pageData) {
 
 	return pageData.data.types
 }
+
+export function competitionEvents(competition) {
+	return (competition.preLiveEvents || []).concat(competition.liveEvents || [])
+}
