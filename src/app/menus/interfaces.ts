@@ -1,16 +1,14 @@
-export interface Menu {
-	id: string | number,
-	title?: string,
-	items?: MenuItem[]
-	groups?: MenuGroup[]
-}
-
-export interface MenuItem {
-	title: string
-	url: string,
-}
-
-export interface MenuGroup {
+export type MenuLink = {
+	id: string,
+	url: string
 	title: string,
-	groups: Menu[],
 }
+
+export type Menu = {
+	id: string,
+	title?: string,
+	items: MenuItem[]
+}
+
+export type MenuItem = MenuLink | Menu
+

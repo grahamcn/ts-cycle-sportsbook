@@ -1,4 +1,4 @@
-import { div, VNode, ul, DOMSource, p } from '@cycle/dom'
+import { div, VNode, ul, DOMSource, p, li } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -6,23 +6,27 @@ import { StateSource, Reducer, makeCollection } from 'cycle-onionify'
 import isolate from '@cycle/isolate'
 import { dropRepeats } from '../misc/xstream.extra'
 
+import { staticTertiaryMenus } from '../misc/constants'
 import {
 	pick,
 	transformPathToSecondaryDataKey,
 	getTertiaryMenuDataUrl,
-	transformToMenuGroups,
+	transformDynamicMenuDataToMenus,
 } from '../misc/helpers'
 
 import {
 	simpleHttpResponseReplaceError,
 } from '../misc/helpers.xs'
 
-import GroupedMenus from './groupedMenus'
-import SimpleMenu from './SimpleMenu'
-import { Menu, MenuItem	} from './interfaces'
+import MenuComponent from './menu'
+import { Menu } from './interfaces'
 
 
-interface State extends Array<Menu> { }
+interface State {
+	secondaryKey: string,
+	staticMenus: Menu[]
+	dynamicMenus: Menu[]
+}
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -38,9 +42,16 @@ interface Sources {
 	onion: StateSource<State>
 }
 
-// Convert to MVI in a copy of this file as an example.
+// this component has two child components:
+// static menu
+// dynamic menu
+
+// it's assumed we find the static menu in the config. if this doesn't exist there is an error.
+// the dynamic menu will display any menu items it finds for the secondary key, else wiull return nothing (won't display an error)
 
 function TertiaryMenu(sources: Sources): Sinks {
+	const state$ = sources.onion.state$
+
 	// define a stream of sport
 	const secondaryDataKey$ =
 		sources.History
@@ -54,7 +65,6 @@ function TertiaryMenu(sources: Sources): Sinks {
 			.map(key => ({
 				url: getTertiaryMenuDataUrl(key),
 				'category': 'tertiary-menu',
-				// https://github.com/cyclejs/cyclejs/issues/355
 				lazy: true, // cancellable
 			}))
 
@@ -68,18 +78,17 @@ function TertiaryMenu(sources: Sources): Sinks {
 	const successMenuData$ = menuData$.filter(data => !data.err)
 	const errorMenuData$ = menuData$.filter(data => !!data.err)
 
-	// menu groups are the component state (well, an array of menu groups, empty or otherwise).
-	const menuGroups$: xs<Array<Map<string, MenuItem>>> =
-		successMenuData$.map(transformToMenuGroups)
 
-	const simpleMenuListLens = {
-		get: (state: Array<Menu>) => {
-			return state.filter(menu => !!menu.items)
-		},
+	const dynamicMenus$: Stream<Menu[]> =
+		successMenuData$.map(transformDynamicMenuDataToMenus)
+
+	// static menu list
+	const staticMenusListLens = {
+		get: (state: State) => state.staticMenus,
 	}
 
-	const SimpleMenuList: any = makeCollection({
-		item: SimpleMenu,
+	const StaticMenusList: any = makeCollection({
+		item: MenuComponent,
 		itemKey: (item: any) => item.id,
 		itemScope: key => key,
 		collectSinks: instances => {
@@ -90,72 +99,115 @@ function TertiaryMenu(sources: Sources): Sinks {
 		}
 	})
 
-	const listSinks = isolate(SimpleMenuList, { onion: simpleMenuListLens })(sources) // list idetifies the part of state of loop over
-	const listSinksDOM$: Stream<Array<VNode>> = listSinks.DOM
-	const listSinksHistory$: Stream<string> = listSinks.History
+	const staticMenusSinks = isolate(StaticMenusList, { onion: staticMenusListLens })(sources) // list idetifies the part of state of loop over
+	const staticMenusDom$: Stream<Array<VNode>> = staticMenusSinks.DOM
+	const staticMenusHistory$: Stream<string> = staticMenusSinks.History
 
-	// one grouped menu, todo
-	const groupedMenusLens = {
-		get: state => state.filter(menu => !!menu.groups)[0],
+	// dynamic menu list
+	const dynamicMenusListLens = {
+		get: (state: State) => state.dynamicMenus,
 	}
 
-	const menuGroupSinks = isolate(GroupedMenus, { onion: groupedMenusLens })(sources)
-	const menuGroupSinksDom$: Stream<VNode> = menuGroupSinks.DOM
-	const menuGroupSinksHistory$: Stream<string> = menuGroupSinks.History
+	const DynamicMenusList: any = makeCollection({
+		item: MenuComponent,
+		itemKey: (item: any) => item.id,
+		itemScope: key => key,
+		collectSinks: instances => {
+			return {
+				DOM: instances.pickCombine('DOM'), // combine all the dom streams
+				History: instances.pickMerge('History')
+			}
+		}
+	})
 
-	// VIEW ISH
+	const dynamicMenusSinks = isolate(DynamicMenusList, { onion: dynamicMenusListLens })(sources) // list idetifies the part of state of loop over
+	const dynamicMenusDom$: Stream<Array<VNode>> = dynamicMenusSinks.DOM
+	const dynamicMenusHistory$: Stream<string> = dynamicMenusSinks.History
 
-	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(() =>
-		div('.tertiaryMenu', [
-			p('No menu data for this segment...')
+	const loadingDom$: Stream<VNode[]> =
+		secondaryDataKey$ // ie when this emits, we display the loading indicator
+			.compose(dropRepeats())
+			// map to an array of li as we're using this interchangeably with dynamic menu dom, which is an array of vnodes
+			.mapTo([
+				li('.listItem',
+					div('.loading', 'loading...')
+				)
+			])
+
+	const errorMenuDom$: Stream<VNode> =
+		errorMenuData$
+		.mapTo([
+			li('.listItem',
+				div('.error', 'error loading dynamic menu')
+			)
 		])
-	)
 
-	const successMenuDom$: Stream<VNode> =
+	const dynamicDom$ =
+		xs.merge(
+			loadingDom$,
+			dynamicMenusDom$,
+			errorMenuDom$,
+		)
+
+	// add loading state to the dynamic menu
+	const vdom$: Stream<VNode> =
 		xs.combine(
-			listSinksDOM$,
-			menuGroupSinksDom$,
-		).map(([listSinksDOM, menuGroupSinksDom]) =>
+			staticMenusDom$,
+			dynamicDom$,
+		).map(([staticMenusDom, dynamicDom]) =>
 			div('.tertiaryMenu', [
-				ul('.list', [
-					...listSinksDOM,
-					menuGroupSinksDom,
-				])
+				ul('.list', staticMenusDom),
+				ul('.list', dynamicDom),
 			])
 		)
 
-	// add loading state
-	const vdom$: Stream<VNode> =
-		xs.merge(
-			successMenuDom$,
-			errorMenuDom$,
-		).startWith(div('loading...'))
+	// Reducer / state - two streams change state, the dstatic menu items and the dynamic menu  items.
+	// The view is derive from state
+	// Set the default sate
+	const defaultReducer$: Stream<Reducer<State>> =
+		xs.of(function () {
+			return {
+				secondaryKey: undefined,
+				staticMenus: [],
+				dynamicMenus: []
+			}
+		})
 
-	// Reducer / state
-	// we iitialize state with an empty array of menu groups, a reducer that returns initial state
-	// as we recieve history events, the menuReducer will update state as menuGroups emits events / groups
-	const defaultReducer$ = xs.of(function () { return [] })
+	// Set the static menu data based on the secondary data key
+	const staticMenusReducer$: Stream<Reducer<State>> =
+		secondaryDataKey$
+			.compose(dropRepeats())
+			.map(staticTertiaryMenus)
+			.map(menus =>
+				function staticMenusReducer(prev: State): State {
+					return {
+						...prev,
+						staticMenus: menus
+					}
+				}
+			)
 
-	const menuReducer$ =
-		menuGroups$.map((menuGroups: Array<any>) =>
-			function reducer(prevState) {
-				return menuGroups
-			})
+	// set the dynamic menus based on data over the wire
+	const dynamicMenusReducer$: Stream<Reducer<State>> =
+		dynamicMenus$
+			.map((dynamicMenus: Menu[]) =>
+				function dynamicMenusReducer(prev: State): State {
+					return {
+						...prev,
+						dynamicMenus,
+					}
+				})
 
-	const reducer$ = xs.merge(defaultReducer$, menuReducer$)
 
-	// history
-	const history$ =
-		xs.merge(
-			listSinksHistory$,
-			menuGroupSinksHistory$,
-		)
+	const tertiaryMenuReducer$ = xs.merge(defaultReducer$, staticMenusReducer$, dynamicMenusReducer$)
+	const tertiaryMenuHistory$ = xs.merge(staticMenusHistory$, dynamicMenusHistory$)
+	const tertiaryMenuHttp$ = xs.merge(menuHttp$)
 
 	return {
 		DOM: vdom$,
-		HTTP: menuHttp$,
-		onion: reducer$,
-		History: history$,
+		HTTP: tertiaryMenuHttp$,
+		onion: tertiaryMenuReducer$,
+		History: tertiaryMenuHistory$,
 	}
 }
 

@@ -28,13 +28,17 @@ function Sport(sources: Sources): Sinks {
 	const competitionComponentSinks$: Stream<CompetitionComponentSinks[]> =
 		competitions$
 			.map(competitions =>
-				competitions.map(competition =>
-					CompetitionComponent({
-						DOM: sources.DOM,
-						onion: sources.onion,
-						competition$: xs.of(competition),
-						LiveData: liveData$,
-					})
+				competitions
+					.filter(competition =>
+						(competition.preLiveEvents || []).concat(competition.liveEvents || []).length > 0
+					)
+					.map(competition =>
+						CompetitionComponent({
+							DOM: sources.DOM,
+							onion: sources.onion,
+							competition$: xs.of(competition),
+							LiveData: liveData$,
+						})
 				)
 			)
 

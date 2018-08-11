@@ -1,7 +1,7 @@
 import {
 	defaultSecondarySegment,
 	baseUrl,
-	staticTertiaryMenuItems,
+	staticTertiaryMenus,
 } from './constants'
 
 import { MenuItem, Menu } from '../menus/interfaces'
@@ -37,12 +37,13 @@ export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl:
 	return types // competitions, with the country name embedded in each type name. eg "england - premier league"
 		.map(type =>
 			Object.assign({}, type, {
+				id: type.id,
 				country: type.name.split(' - ')[0].trim(),
 				title: type.name.split(' - ')[1].trim(),
 				url: `/${secondarySegmentUrl}/${type.urlName}`,
 			})
 		)
-		.map(({ url, title, country }) => ({ url, title, country }))
+		.map(({ id, url, title, country }) => ({ id, url, title, country }))
 		.reduce(groupByKey('country'), new Map())
 }
 
@@ -97,16 +98,58 @@ export function transformToMenuGroups(menuData): Array<any> {
 	})
 
 	return [{
-		id: 1,
-		items: staticTertiaryMenuItems(secondarySegmentUrl),
+		id: '1',
+		items: staticTertiaryMenus(secondarySegmentUrl),
 	}, {
-		id: 2,
+		id: '2',
 		title: 'In Evidenza',
 		items: inEvidenzaMenuItems,
 	}, {
-		id: 3,
+		id: '3',
 		title: 'Tutte Le Competizioni',
-		groups: tutteLeCompetizioniMenus,
+		items: tutteLeCompetizioniMenus,
+	}]
+}
+
+export function transformDynamicMenuDataToMenus(menuData): Menu[] {
+	const secondarySegmentUrl = menuData.data.urlName
+
+	const inEvidenzaMenuItems =
+		menuData.data.types
+			.slice(0, 5)
+			.map(({ urlName, name }, index) => {
+				return {
+					id: index.toString(),
+					title: name.split(' - ')[1].trim(),
+					url: `/${secondarySegmentUrl}/${urlName}`,
+				}
+			})
+
+	const tutteLeCompetizioniMenuItems: Map<string, MenuItem[]> =
+		[menuData]
+			.map(pick('data'))
+			.map(pick('types'))
+			.map((competitions: Array<any>) => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
+			.map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
+
+	// convert the map to an array of Menus - probably possible to simplify the above
+	const tutteLeCompetizioniMenus: Menu[] = []
+		tutteLeCompetizioniMenuItems.forEach((value, key) => {
+			tutteLeCompetizioniMenus.push({
+				id: key,
+				title: key,
+				items: value
+			})
+		})
+
+	return [{
+		id: '1',
+		title: 'In Evidenza',
+		items: inEvidenzaMenuItems,
+	}, {
+		id: '2',
+		title: 'Tutte Le Competizioni',
+		items: tutteLeCompetizioniMenus,
 	}]
 }
 
