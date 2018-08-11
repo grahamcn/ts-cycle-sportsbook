@@ -7,6 +7,7 @@ export function renderListItem(dom: VNode): VNode {
 }
 
 export function renderDataError(err?: string): VNode {
+	debugger
 	return div('.error', err  || 'error loading dynamic data')
 }
 

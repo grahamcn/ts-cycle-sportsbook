@@ -83,7 +83,7 @@ function Catalog(sources: Sources): Sinks {
 	// every time we recieve an error response, we map that to a piece of Dom that says error.
 	const errorPageDom$: Stream<VNode> =
 		unsuccessfulCatalogDataResponse$
-			.map(renderDataError('No data found for sport'))
+			.mapTo(renderDataError('No data found for sport'))
 
 	// every time we requst new data, we map that to a piece of Dom that says loading...
 	const loadingDom$: Stream<VNode> =
