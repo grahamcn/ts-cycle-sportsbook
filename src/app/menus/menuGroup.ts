@@ -1,65 +1,87 @@
-import { VNode, DOMSource, div, li, h4, ul } from '@cycle/dom'
+import { VNode, ul, li, div, span, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
-import { StateSource, makeCollection } from 'cycle-onionify'
+import { StateSource } from 'cycle-onionify'
+
+import { Menu } from './interfaces'
+import MenuComponent from './menu'
 import isolate from '@cycle/isolate'
 
-import { MenuGroup } from './interfaces'
-import ToggleMenu from './toggleMenu'
+const openState = {
+	open: true,
+	classes: ['.header .headerToggle', '.headerToggle--expanded'],
+	arrow: '\u2191'
+}
 
-interface State extends MenuGroup { }
+const closedState = {
+	open: false,
+	classes: ['.header .headerToggle', '.headerToggle--closed'],
+	arrow: '\u2193'
+}
+
+interface State extends Menu {}
 
 interface Sinks {
-	DOM: Stream<VNode>,
+	DOM: Stream<VNode>
 	History: Stream<string>
 }
 
 interface Sources {
-	DOM: DOMSource,
+	DOM: DOMSource
 	onion: StateSource<State>
 }
 
-function GroupedMenus(sources: Sources): Sinks {
+function MenuGroup(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
-	const toggleMenuLens = {
-		get: (state: State) => state.menu
+	const open$ =
+		sources.DOM
+			.select('.headerToggle--closed')
+			.events('click')
+			.mapTo(openState)
+
+	const close$ =
+		sources.DOM
+			.select('.headerToggle--expanded')
+			.events('click')
+			.mapTo(closedState)
+
+	const toggleState$ =
+		xs.merge(
+			open$,
+			close$,
+		).startWith(closedState)
+
+	const menuLens = {
+		get: (state: State) => ({
+			items: state.items
+		})
 	}
-
-	const ToggleMenuList: any = makeCollection({
-		item: ToggleMenu,
-		itemKey: (item: any) => item.id,
-		itemScope: key => key,
-		collectSinks: instances => {
-			return {
-				DOM: instances.pickCombine('DOM'),
-				History: instances.pickMerge('History'),
-			}
-		}
-	})
-
-	const toggleMenuListSinks = isolate(ToggleMenuList, { onion: toggleMenuLens })(sources)
-	const toggleMenuListSinksDom$: Stream<VNode[]> = toggleMenuListSinks.DOM
-	const toggleMenuListSinksHistory$: Stream<string> = toggleMenuListSinks.History
+	const Menu = isolate(MenuComponent, {onion: menuLens})(sources)
+	const menuDom$: Stream<VNode> = Menu.DOM
+	const menuHistory$: Stream<string> = Menu.History
 
 	const vdom$ =
 		xs.combine(
 			state$,
-			toggleMenuListSinksDom$,
-		).map(([state, toggleMenuListSinksDom]) =>
-			li('.list', [
-				div('.header', [
-					h4('.heading', state.title),
-				]),
-				ul('.list', [
-					...toggleMenuListSinksDom,
-				]),
-			])
+			toggleState$,
+			menuDom$,
+		).map(([state, toggleState, menuDom]) =>
+				li('.listItem', [
+					div(toggleState.classes.join(' '), [
+						state.title,
+						span(toggleState.arrow)
+					]),
+					toggleState.open ?
+						ul('.list', [
+							menuDom,
+						]) : undefined
+				])
 		)
 
 	return {
 		DOM: vdom$,
-		History: toggleMenuListSinksHistory$,
+		History: menuHistory$,
 	}
 }
 
-export default GroupedMenus
+export default MenuGroup

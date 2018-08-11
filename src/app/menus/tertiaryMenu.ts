@@ -1,4 +1,4 @@
-import { div, VNode, ul, DOMSource, p } from '@cycle/dom'
+import { div, VNode, ul, DOMSource, p, li } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
@@ -6,7 +6,7 @@ import { StateSource, Reducer, makeCollection } from 'cycle-onionify'
 import isolate from '@cycle/isolate'
 import { dropRepeats } from '../misc/xstream.extra'
 
-import {staticTertiaryMenus} from '../misc/constants'
+import { staticTertiaryMenus } from '../misc/constants'
 import {
 	pick,
 	transformPathToSecondaryDataKey,
@@ -19,14 +19,14 @@ import {
 } from '../misc/helpers.xs'
 
 import MenuComponent from './menu'
-import { Menu	} from './interfaces'
+import { Menu } from './interfaces'
 
 
 interface State {
-  secondaryKey: string,
-  staticMenus: Menu[]
-  dynamicMenus: Menu[]
- }
+	secondaryKey: string,
+	staticMenus: Menu[]
+	dynamicMenus: Menu[]
+}
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -50,7 +50,7 @@ interface Sources {
 // the dynamic menu will display any menu items it finds for the secondary key, else wiull return nothing (won't display an error)
 
 function TertiaryMenu(sources: Sources): Sinks {
-  const state$ = sources.onion.state$
+	const state$ = sources.onion.state$
 
 	// define a stream of sport
 	const secondaryDataKey$ =
@@ -58,7 +58,7 @@ function TertiaryMenu(sources: Sources): Sinks {
 			.map(pick('pathname'))
 			.map(transformPathToSecondaryDataKey)
 
-  // define a stream of menu data requests
+	// define a stream of menu data requests
 	const menuHttp$ =
 		secondaryDataKey$
 			.compose(dropRepeats()) // akin to memoize / shouldComponentUpdate. if we change urls, we don't change menu unless segment 1 changes
@@ -82,7 +82,7 @@ function TertiaryMenu(sources: Sources): Sinks {
 	const dynamicMenus$: Stream<Menu[]> =
 		successMenuData$.map(transformDynamicMenuDataToMenus)
 
-  // static menu list
+	// static menu list
 	const staticMenusListLens = {
 		get: (state: State) => state.staticMenus,
 	}
@@ -101,10 +101,10 @@ function TertiaryMenu(sources: Sources): Sinks {
 
 	const staticMenusSinks = isolate(StaticMenusList, { onion: staticMenusListLens })(sources) // list idetifies the part of state of loop over
 	const staticMenusDom$: Stream<Array<VNode>> = staticMenusSinks.DOM
-  const staticMenusHistory$: Stream<string> = staticMenusSinks.History
+	const staticMenusHistory$: Stream<string> = staticMenusSinks.History
 
-  // dynamic menu list
-  const dynamicMenusListLens = {
+	// dynamic menu list
+	const dynamicMenusListLens = {
 		get: (state: State) => state.dynamicMenus,
 	}
 
@@ -124,70 +124,88 @@ function TertiaryMenu(sources: Sources): Sinks {
 	const dynamicMenusDom$: Stream<Array<VNode>> = dynamicMenusSinks.DOM
 	const dynamicMenusHistory$: Stream<string> = dynamicMenusSinks.History
 
-	const errorMenuDom$: Stream<VNode> = errorMenuData$.map(() =>
-		div('.tertiaryMenu', [
-			p('No menu data for this segment...')
+	const loadingDom$: Stream<VNode[]> =
+		secondaryDataKey$ // ie when this emits, we display the loading indicator
+			.compose(dropRepeats())
+			// map to an array of li as we're using this interchangeably with dynamic menu dom, which is an array of vnodes
+			.mapTo([
+				li('.listItem',
+					div('.loading', 'loading...')
+				)
+			])
+
+	const errorMenuDom$: Stream<VNode> =
+		errorMenuData$
+		.mapTo([
+			li('.listItem',
+				div('.error', 'error loading dynamic menu')
+			)
 		])
-	)
+
+	const dynamicDom$ =
+		xs.merge(
+			loadingDom$,
+			dynamicMenusDom$,
+			errorMenuDom$,
+		)
 
 	// add loading state to the dynamic menu
-  const vdom$: Stream<VNode> =
-    xs.combine(
-      staticMenusDom$,
-      dynamicMenusDom$,
-    ).map(([staticMenusDom, dynamicMenusDom]) =>
-      div('.tertiaryMenu', [
-        ul('.list', staticMenusDom),
-        ul('.list', dynamicMenusDom),
-      ])
-    )
+	const vdom$: Stream<VNode> =
+		xs.combine(
+			staticMenusDom$,
+			dynamicDom$,
+		).map(([staticMenusDom, dynamicDom]) =>
+			div('.tertiaryMenu', [
+				ul('.list', staticMenusDom),
+				ul('.list', dynamicDom),
+			])
+		)
 
+	// Reducer / state - two streams change state, the dstatic menu items and the dynamic menu  items.
+	// The view is derive from state
+	// Set the default sate
+	const defaultReducer$: Stream<Reducer<State>> =
+		xs.of(function () {
+			return {
+				secondaryKey: undefined,
+				staticMenus: [],
+				dynamicMenus: []
+			}
+		})
 
-  // Reducer / state - two streams change state, the dstatic menu items and the dynamic menu  items.
-  // The view is derive from state
-  // Set the default sate
-  const defaultReducer$: Stream<Reducer<State>> =
-    xs.of(function () {
-      return {
-        secondaryKey: undefined,
-        staticMenus: [],
-        dynamicMenus: []
-      }
-    })
-
-  // Set the static menu data based on the secondary data key
+	// Set the static menu data based on the secondary data key
 	const staticMenusReducer$: Stream<Reducer<State>> =
-    secondaryDataKey$
-      .compose(dropRepeats())
-      .map(staticTertiaryMenus)
-      .map(menus =>
-        function staticMenusReducer(prev: State): State {
-          return {
-            ...prev,
-            staticMenus: menus
-          }
-        }
-      )
+		secondaryDataKey$
+			.compose(dropRepeats())
+			.map(staticTertiaryMenus)
+			.map(menus =>
+				function staticMenusReducer(prev: State): State {
+					return {
+						...prev,
+						staticMenus: menus
+					}
+				}
+			)
 
-  // set the dynamic menus based on data over the wire
-  const dynamicMenusReducer$: Stream<Reducer<State>> =
-    dynamicMenus$
-      .map((dynamicMenus: Menu[]) =>
-        function dynamicMenusReducer(prev:State): State {
-          return {
-            ...prev,
-            dynamicMenus,
-          }
-        })
+	// set the dynamic menus based on data over the wire
+	const dynamicMenusReducer$: Stream<Reducer<State>> =
+		dynamicMenus$
+			.map((dynamicMenus: Menu[]) =>
+				function dynamicMenusReducer(prev: State): State {
+					return {
+						...prev,
+						dynamicMenus,
+					}
+				})
 
 
-  const tertiaryMenuReducer$ = xs.merge(defaultReducer$, staticMenusReducer$, dynamicMenusReducer$)
-  const tertiaryMenuHistory$ = xs.merge(staticMenusHistory$, dynamicMenusHistory$)
-
+	const tertiaryMenuReducer$ = xs.merge(defaultReducer$, staticMenusReducer$, dynamicMenusReducer$)
+	const tertiaryMenuHistory$ = xs.merge(staticMenusHistory$, dynamicMenusHistory$)
+	const tertiaryMenuHttp$ = xs.merge(menuHttp$)
 
 	return {
 		DOM: vdom$,
-		HTTP: xs.empty(),
+		HTTP: tertiaryMenuHttp$,
 		onion: tertiaryMenuReducer$,
 		History: tertiaryMenuHistory$,
 	}

@@ -3,7 +3,7 @@ import { div, VNode, ul, li, a, DOMSource } from '@cycle/dom'
 
 import { containerMenuData } from '../misc/constants'
 import { getTargetDataUrl } from '../misc/helpers'
-import { Link } from './interfaces'
+import { MenuLink } from './interfaces'
 
 export interface Sources {
 	DOM: DOMSource
@@ -25,7 +25,7 @@ function SecondaryMenu(sources): Sinks {
 			.map(data =>
 				div('.secondaryMenu',
 					ul('.list .inline',
-						data.map((menuItem: Link) =>
+						data.map((menuItem: MenuLink) =>
 							li('.listItem',
 								a('.link', {
 									attrs: {

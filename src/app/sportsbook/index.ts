@@ -78,7 +78,6 @@ function Sportsbook(sources: Sources): Sinks {
 					selections:
 						prev.selections.map(selection => {
 							if (selection.id === liveData.outcome.id) {
-                console.log(liveData.outcome)
 								return Object.assign({}, selection, {
                   price: parseFloat(liveData.outcome.price),
                   priceChangeUp: selection.price < parseFloat(liveData.outcome.price),
