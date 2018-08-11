@@ -168,7 +168,8 @@ h1, h2, h3, h4, h5, h6 {
 	display: block
 }
 
-.tertiaryMenu .list + .list {
+.tertiaryMenu .list + .list,
+.tertiaryMenu .menu + .menu {
 	margin-top: 16px;
 }
 
