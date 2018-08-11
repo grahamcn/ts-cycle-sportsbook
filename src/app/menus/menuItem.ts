@@ -1,9 +1,10 @@
 import { VNode, DOMSource } from '@cycle/dom'
 import { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
+
 import MenuLinkComponent from './menuLink'
 import MenuGroupComponent from './menuGroup'
-import { MenuItem } from './interfaces'
+import { MenuLink, Menu } from './interfaces'
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -19,7 +20,7 @@ function MenuItemComponent(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
 
 	const menuItemComponent$: Stream<Sinks> =
-		state$.map((state: MenuItem) =>
+		state$.map((state: Menu|MenuLink) =>
 			!!state['url'] ? MenuLinkComponent(sources) :  MenuGroupComponent(sources)
 		)
 

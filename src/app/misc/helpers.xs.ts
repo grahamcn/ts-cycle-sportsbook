@@ -1,7 +1,10 @@
-import xs from 'xstream'
+import xs, { Stream } from 'xstream'
+import { VNode } from '../../../node_modules/@cycle/dom';
+import { CatalogComponentSinks } from '../sportsbook/interfaces';
 
 // when the stream returns an error, replace an error on the stream with a non erroneous stream (ie don't kill the stream),
 // with an error property on it to identify
+// there is a good video on error handling in streams from AngularConnect 2017 by Ben Lesh
 export function simpleHttpResponseReplaceError(response$) {
 	return response$.replaceError(err => {
 		const body = {

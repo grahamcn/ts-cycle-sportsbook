@@ -1,9 +1,9 @@
 import xs, { Stream } from 'xstream';
-import { div, VNode, ul, li, a, DOMSource } from '@cycle/dom'
+import { div, VNode, ul, DOMSource } from '@cycle/dom'
 
 import { containerMenuData } from '../misc/constants'
 import { getTargetDataUrl } from '../misc/helpers'
-import { MenuLink } from './interfaces'
+import { renderMenuLink } from '../misc/helpers.dom'
 
 export interface Sources {
 	DOM: DOMSource
@@ -25,19 +25,7 @@ function SecondaryMenu(sources): Sinks {
 			.map(data =>
 				div('.secondaryMenu',
 					ul('.list .inline',
-						data.map((menuItem: MenuLink) =>
-							li('.listItem',
-								a('.link', {
-									attrs: {
-										title: menuItem.title,
-										href: menuItem.url,
-									},
-									dataset: {
-										dataUrl: menuItem.url
-									}
-								}, menuItem.title
-								)
-							))
+						data.map(renderMenuLink)
 					)
 				)
 			)

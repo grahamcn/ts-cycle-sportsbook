@@ -1,9 +1,10 @@
-import { VNode, DOMSource, li, ul } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { Selection, Market } from '../interfaces'
 import OutcomeComponent, { Sinks as OutcomeComponentSinks } from './outcome'
+import { renderMarket } from '../../misc/helpers.dom'
 
 export interface State extends Array<Selection> {}
 
@@ -69,13 +70,7 @@ function MarketComponent(sources: Sources): Sinks {
 		xs.combine(
 			market$,
 			outcomeComponentsDom$,
-		).map(([market, outcomeComponentsDom]) =>
-			li('.listItem .market', [
-				ul('.list .inline .market__outcomes', [
-					...outcomeComponentsDom,
-				]),
-			])
-		)
+		).map(renderMarket)
 
 	return {
 		DOM: vdom$,

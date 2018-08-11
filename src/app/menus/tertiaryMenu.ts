@@ -1,12 +1,13 @@
-import { div, VNode, ul, DOMSource, p, li } from '@cycle/dom'
+import { div, VNode, ul, DOMSource, li } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { Location } from 'history'
 import { RequestInput, HTTPSource } from '@cycle/http'
 import { StateSource, Reducer, makeCollection } from 'cycle-onionify'
 import isolate from '@cycle/isolate'
-import { dropRepeats } from '../misc/xstream.extra'
 
+import { dropRepeats } from '../misc/xstream.extra'
 import { staticTertiaryMenus } from '../misc/constants'
+
 import {
 	pick,
 	transformPathToSecondaryDataKey,
@@ -62,10 +63,11 @@ function TertiaryMenu(sources: Sources): Sinks {
 	const menuHttp$ =
 		secondaryDataKey$
 			.compose(dropRepeats()) // akin to memoize / shouldComponentUpdate. if we change urls, we don't change menu unless segment 1 changes
-			.map(key => ({
-				url: getTertiaryMenuDataUrl(key),
+			.map(key => getTertiaryMenuDataUrl(key))
+			.map(url => ({
+				url,
 				'category': 'tertiary-menu',
-				lazy: true, // cancellable
+				lazy: true, // cancellable (switch latest, effectively)
 			}))
 
 	const menuData$ =
@@ -78,14 +80,8 @@ function TertiaryMenu(sources: Sources): Sinks {
 	const successMenuData$ = menuData$.filter(data => !data.err)
 	const errorMenuData$ = menuData$.filter(data => !!data.err)
 
-
 	const dynamicMenus$: Stream<Menu[]> =
 		successMenuData$.map(transformDynamicMenuDataToMenus)
-
-	// static menu list
-	const staticMenusListLens = {
-		get: (state: State) => state.staticMenus,
-	}
 
 	const StaticMenusList: any = makeCollection({
 		item: MenuComponent,
@@ -99,7 +95,7 @@ function TertiaryMenu(sources: Sources): Sinks {
 		}
 	})
 
-	const staticMenusSinks = isolate(StaticMenusList, { onion: staticMenusListLens })(sources) // list idetifies the part of state of loop over
+	const staticMenusSinks = isolate(StaticMenusList, 'staticMenus')(sources)
 	const staticMenusDom$: Stream<Array<VNode>> = staticMenusSinks.DOM
 	const staticMenusHistory$: Stream<string> = staticMenusSinks.History
 
@@ -201,7 +197,7 @@ function TertiaryMenu(sources: Sources): Sinks {
 
 	const tertiaryMenuReducer$ = xs.merge(defaultReducer$, staticMenusReducer$, dynamicMenusReducer$)
 	const tertiaryMenuHistory$ = xs.merge(staticMenusHistory$, dynamicMenusHistory$)
-	const tertiaryMenuHttp$ = xs.merge(menuHttp$)
+	const tertiaryMenuHttp$ = menuHttp$
 
 	return {
 		DOM: vdom$,

@@ -1,9 +1,10 @@
-import { div, VNode, DOMSource, h2, h3, li, ul } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { Competition, Selection } from '../interfaces'
 import EventComponent, { Sinks as EventComponentSinks } from './event'
+import { renderCompetition } from '../../misc/helpers.dom'
 
 interface State extends Array<Selection> { }
 
@@ -66,21 +67,7 @@ function CompetitionComponent(sources: Sources): Sinks {
 		xs.combine(
 			competition$,
 			eventComponentsDom$,
-		).map(([competition, eventComponentsDom]) =>
-			li('.listItem .competition', [
-				div('.header', [
-					h2('.heading', competition.name),
-				]),
-				li('.list .eventGroup', [
-					div('.header', [
-						h3('.heading', 'Date'),
-					]),
-					ul('.list .events', [
-						...eventComponentsDom
-					])
-				])
-			])
-		)
+		).map(renderCompetition)
 
 	return {
 		DOM: vdom$,

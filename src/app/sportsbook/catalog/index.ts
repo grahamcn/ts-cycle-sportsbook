@@ -15,7 +15,7 @@ import { dropRepeats } from '../../misc/xstream.extra'
 import { Catalog, Selection } from '../interfaces'
 import Sport from './sport'
 
-interface State extends Array<Selection> {}
+interface State extends Array<Selection> { }
 
 interface Sinks {
 	DOM: Stream<VNode>,
@@ -126,12 +126,12 @@ function Catalog(sources: Sources): Sinks {
 			.map(selection =>
 				function addOneItemReducer(prev: State): State {
 					return [...prev, Object.assign(selection, {
-            // we are copyiing an outcome from the dom to the state.
-            // as they outcome in the dom will have a price change property if it has been updated, we don't want to take it to
-            // the selections (as it'll force an animate)
-            priceChangeUp: undefined,
-            priceChangeDown: undefined, // ditto
-          })]
+						// we are copyiing an outcome from the dom to the state.
+						// as they outcome in the dom will have a price change property if it has been updated, we don't want to take it to
+						// the selections (as it'll force an animate)
+						priceChangeUp: undefined,
+						priceChangeDown: undefined, // ditto
+					})]
 				}
 			)
 
@@ -141,7 +141,7 @@ function Catalog(sources: Sources): Sinks {
 			.map((t: any) => JSON.parse(t.dataset.dataOutcome).id)
 			.map(selectionId =>
 				function removeSelectionReducer(prev: State): State {
-					return prev.filter(({id}) => id !== selectionId)
+					return prev.filter(({ id }) => id !== selectionId)
 				}
 			)
 
@@ -158,11 +158,11 @@ function Catalog(sources: Sources): Sinks {
 			loadingDom$, // stream of loading...
 			errorPageDom$, // stream of loading errors
 		)
-		.map((dom: VNode) =>
-			div('.catalog', [
-				dom,
-			])
-		)
+			.map((dom: VNode) =>
+				div('.catalog', [
+					dom,
+				])
+			)
 
 	// return Catalog sinks
 	return {

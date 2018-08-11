@@ -79,15 +79,15 @@ function Sportsbook(sources: Sources): Sinks {
 						prev.selections.map(selection => {
 							if (selection.id === liveData.outcome.id) {
 								return Object.assign({}, selection, {
-                  price: parseFloat(liveData.outcome.price),
-                  priceChangeUp: selection.price < parseFloat(liveData.outcome.price),
-                  priceChangeDown: selection.price > parseFloat(liveData.outcome.price)
+									price: parseFloat(liveData.outcome.price),
+									priceChangeUp: selection.price < parseFloat(liveData.outcome.price),
+									priceChangeDown: selection.price > parseFloat(liveData.outcome.price)
 								})
 							}
 
 							return selection
 						})
-					}
+				}
 			}
 		)
 

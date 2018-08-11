@@ -31,8 +31,6 @@ html {
   }
 }
 
-
-
 /* Type */
 
 @font-face {
@@ -224,7 +222,7 @@ h1, h2, h3, h4, h5, h6 {
   border-bottom: none;
 }
 
-.event__name {
+.event > .link {
 	padding-left: 16px;
 	display: flex;
 	align-items: center;

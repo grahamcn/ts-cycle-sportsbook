@@ -1,9 +1,11 @@
 import xs, { Stream } from 'xstream'
-import { DOMSource, VNode, div, h4, li, span } from '@cycle/dom'
+import { DOMSource, VNode } from '@cycle/dom'
 import { StateSource, Reducer } from 'cycle-onionify'
-import { Selection } from '../interfaces'
 
-export interface State extends Selection {}
+import { Selection } from '../interfaces'
+import { renderSelection } from '../../misc/helpers.dom'
+
+export interface State extends Selection { }
 
 export interface Sources {
 	DOM: DOMSource
@@ -29,29 +31,7 @@ function SelectionCompenent(sources: Sources): Sinks {
 		xs.merge(deleteReducer$)
 
 	const vdom$: Stream<VNode> =
-		xs.combine(
-			state$,
-		)
-		.map(([selection]) =>
-			li(`.listItem .selection ${selection.priceChangeUp || selection.priceChangeDown ? `priceTo-${selection.price * 100}` : ''}`, {
-        class: {
-          priceChange: selection.priceChangeUp || selection.priceChangeDown,
-        },
-      }, [
-        div('.selection__price', [
-          div('.price', {
-            },
-            selection.price,
-          ),
-        ]),
-				div('.selection__details', [
-					div('.selection__outcome', selection.name),
-					div('.selection__market', selection.marketName),
-					div('.selection__startTime', 'time'),
-				]),
-				div('.selection__remove', 'x')
-			]),
-		)
+		state$.map(renderSelection)
 
 	return {
 		DOM: vdom$,

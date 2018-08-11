@@ -1,14 +1,13 @@
-export type MenuLink = {
+export interface MenuLink {
 	id: string,
 	url: string
 	title: string,
 }
 
-export type Menu = {
+export interface Menu {
 	id: string,
 	title?: string,
-	items: MenuItem[]
+	items: MenuLink[] | Menu[]
 }
 
-export type MenuItem = MenuLink | Menu
 

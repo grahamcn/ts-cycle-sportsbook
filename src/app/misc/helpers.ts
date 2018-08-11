@@ -1,10 +1,9 @@
 import {
 	defaultSecondarySegment,
 	baseUrl,
-	staticTertiaryMenus,
 } from './constants'
 
-import { MenuItem, Menu } from '../menus/interfaces'
+import { Menu } from '../menus/interfaces'
 
 interface PickKey extends Function {
 	(s: Object): string | number | Object // could be others, extend if required
@@ -33,7 +32,13 @@ export function getCatalogDataUrl(path: string, base: string = baseUrl): string 
 	return `${base}${path}/events`
 }
 
-export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl: string): Map<string, Array<MenuItem>> {
+export function getTargetDataUrl(event: MouseEvent): string {
+	event.preventDefault()
+	const target: EventTarget = event.target
+	return target['dataset'].dataUrl
+}
+
+export function transformToMenuItemsByCountry(types: any[], secondarySegmentUrl: string): Map<string, Menu[]> {
 	return types // competitions, with the country name embedded in each type name. eg "england - premier league"
 		.map(type =>
 			Object.assign({}, type, {
@@ -61,56 +66,6 @@ export function sortMapByKey(map: Map<string, any>): Map<string, any> {
 	return new Map([...map.entries()].sort())
 }
 
-export function getTargetDataUrl(event: MouseEvent): string {
-	event.preventDefault()
-	const target: EventTarget = event.target
-	return target['dataset'].dataUrl
-}
-
-export function transformToMenuGroups(menuData): Array<any> {
-	const secondarySegmentUrl = menuData.data.urlName
-
-	const inEvidenzaMenuItems =
-		menuData.data.types
-			.slice(0, 5)
-			.map(({ urlName, name }) => {
-				return {
-					title: name.split(' - ')[1].trim(),
-					url: `/${secondarySegmentUrl}/${urlName}`,
-				}
-			})
-
-	const tutteLeCompetizioniMenuItems: Map<string, MenuItem[]> =
-		[menuData]
-			.map(pick('data'))
-			.map(pick('types'))
-			.map((competitions: Array<any>) => transformToMenuItemsByCountry(competitions, secondarySegmentUrl))
-			.map(menuItemsByCountry => sortMapByKey(menuItemsByCountry))[0]
-
-	// convert the map to an array of Menus - probably possible to simplify the above
-	const tutteLeCompetizioniMenus: Menu[] = []
-	tutteLeCompetizioniMenuItems.forEach((value, key) => {
-		tutteLeCompetizioniMenus.push({
-			id: key,
-			title: key,
-			items: value
-		})
-	})
-
-	return [{
-		id: '1',
-		items: staticTertiaryMenus(secondarySegmentUrl),
-	}, {
-		id: '2',
-		title: 'In Evidenza',
-		items: inEvidenzaMenuItems,
-	}, {
-		id: '3',
-		title: 'Tutte Le Competizioni',
-		items: tutteLeCompetizioniMenus,
-	}]
-}
-
 export function transformDynamicMenuDataToMenus(menuData): Menu[] {
 	const secondarySegmentUrl = menuData.data.urlName
 
@@ -125,7 +80,7 @@ export function transformDynamicMenuDataToMenus(menuData): Menu[] {
 				}
 			})
 
-	const tutteLeCompetizioniMenuItems: Map<string, MenuItem[]> =
+	const tutteLeCompetizioniMenuItems: Map<string, Menu[]> =
 		[menuData]
 			.map(pick('data'))
 			.map(pick('types'))
@@ -151,9 +106,4 @@ export function transformDynamicMenuDataToMenus(menuData): Menu[] {
 		title: 'Tutte Le Competizioni',
 		items: tutteLeCompetizioniMenus,
 	}]
-}
-
-// to test tree shaking at some point
-export function iAmNotCalled() {
-	return 'i am not called'
 }

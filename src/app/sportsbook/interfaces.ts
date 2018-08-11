@@ -1,3 +1,7 @@
+import { VNode } from '@cycle/dom'
+import { Stream } from 'xstream'
+import { Reducer } from '../../../node_modules/cycle-onionify';
+
 export interface Catalog {
 	competitions: Map<string, Competition>
 	events: Map<string, Event>
@@ -69,10 +73,16 @@ export interface Outcome {
 	marketId: string
 	marketName: string
 
+	selected?: boolean
 	priceChangeUp?: boolean
 	priceChangeDown?: boolean
 }
 
 export interface Selection extends Outcome {
 	isBanker?: boolean
+}
+
+export interface CatalogComponentSinks {
+	DOM?: Stream<VNode>
+	onion?: Stream<Reducer<any>>
 }

@@ -1,10 +1,10 @@
-import { VNode, DOMSource, li, span, div } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { MenuLink } from './interfaces'
-import { renderMenuLink } from '../misc/helpers.dom';
-import { getTargetDataUrl } from '../misc/helpers';
+import { renderMenuLink } from '../misc/helpers.dom'
+import { getTargetDataUrl } from '../misc/helpers'
 
 interface State extends MenuLink { }
 
@@ -20,7 +20,9 @@ interface Sources {
 
 function MenuLinkComponent(sources: Sources): Sinks {
 	const state$ = sources.onion.state$
+
 	const vdom$ = state$.map(renderMenuLink)
+
 	const history$ =
 		sources.DOM.select('.link')
 			.events('click')

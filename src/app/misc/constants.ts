@@ -55,7 +55,7 @@ export function staticTertiaryMenus(secondaryKey: string): Menu[] {
 	}]
 
 	if (secondaryKey === 'rugby') {
-		menuItems.splice(1, 1) // remove live
+		menuItems.splice(1, 1)
 	}
 
 	return [{

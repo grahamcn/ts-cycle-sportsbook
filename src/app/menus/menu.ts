@@ -1,11 +1,11 @@
-import { VNode, DOMSource, div, ul } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource, makeCollection } from 'cycle-onionify'
+import isolate from '@cycle/isolate'
 
 import { Menu } from './interfaces'
 import MenuItem from './menuItem'
-import isolate from '../../../node_modules/@cycle/isolate'
-import { renderMenu } from '../misc/helpers.dom';
+import { renderMenu } from '../misc/helpers.dom'
 
 interface State extends Menu { }
 

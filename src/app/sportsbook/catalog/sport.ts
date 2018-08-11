@@ -1,10 +1,11 @@
-import { VNode, DOMSource, ul, p } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { Competition } from '../interfaces'
 import { Selection } from '../interfaces'
 import CompetitionComponent, { Sinks as CompetitionComponentSinks } from './competition'
+import { renderSport } from '../../misc/helpers.dom'
 
 export interface State extends Array<Selection> { }
 
@@ -39,12 +40,10 @@ function Sport(sources: Sources): Sinks {
 							competition$: xs.of(competition),
 							LiveData: liveData$,
 						})
-				)
+					)
 			)
 
-	// stream of an array of streams of competition component vdoms
-	// simple enough
-	const competitionComponentDoms$$: Stream<Stream<VNode>[]> =
+	const competitionComponentsDom$: Stream<VNode[]> =
 		competitionComponentSinks$
 			.map((competitionComponentsSinks: CompetitionComponentSinks[]) =>
 				competitionComponentsSinks
@@ -52,11 +51,8 @@ function Sport(sources: Sources): Sinks {
 						competitionComponentSinks.DOM
 					)
 			)
-
-	// this is the trick here.
-	// transform to a stream of an array of vdoms from a an array of streams of competition component vdoms
-	const competitionComponentsDom$: Stream<VNode[]> =
-		competitionComponentDoms$$
+			// this is the trick here.
+			// transform to a stream of an array of vdoms from a an array of streams of competition component vdoms
 			.map((competitionComponentDoms$: Stream<VNode>[]): Stream<VNode[]> =>
 				xs.combine(...competitionComponentDoms$)
 			)
@@ -67,13 +63,7 @@ function Sport(sources: Sources): Sinks {
 	const vdom$ =
 		xs.combine(
 			competitionComponentsDom$,
-		).map(([competitionComponentsDom]) =>
-			competitionComponentsDom.length === 0 ?
-				p('No competitions found for sport') :
-				ul('.list', [
-					...competitionComponentsDom,
-				])
-		)
+		).map(renderSport)
 
 	return {
 		DOM: vdom$,

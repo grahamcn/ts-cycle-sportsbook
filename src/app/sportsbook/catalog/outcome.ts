@@ -1,8 +1,9 @@
-import { div, VNode, DOMSource, li } from '@cycle/dom'
+import { VNode, DOMSource } from '@cycle/dom'
 import xs, { Stream } from 'xstream'
 import { StateSource } from 'cycle-onionify'
 
 import { Selection, Outcome } from '../interfaces'
+import { renderOutcome } from '../../misc/helpers.dom'
 
 export interface State extends Array<Selection> { }
 
@@ -28,7 +29,7 @@ function OutcomeComponent(sources: Sources): Sinks {
 				liveData$
 					.fold((acc, curr) => ({
 						...acc,
-						price: parseFloat(curr.outcome.price), // new price
+						price: parseFloat(curr.outcome.price),
 						priceChangeUp: acc.price < parseFloat(curr.outcome.price),
 						priceChangeDown: acc.price > parseFloat(curr.outcome.price)
 					}), outcome)
@@ -40,22 +41,12 @@ function OutcomeComponent(sources: Sources): Sinks {
 		xs.combine(
 			liveOutcome$,
 			state$,
-		).map(([outcome, selections]: any) =>
-			li(`.listItem .outcome ${outcome.priceChangeUp || outcome.priceChangeDown && `priceTo-${outcome.price * 100}`}`, { // force class to change
-				class: {
-					selected: selections.map(s => s.id).indexOf(outcome.id) > -1,
-					priceChange: outcome.priceChangeUp || outcome.priceChangeDown,
-				},
-				dataset: {
-					dataOutcome: JSON.stringify(outcome),
-				}
-			}, [
-					div('.outcome__label', outcome.name),
-					div('.outcome__price', [
-						div('.price', outcome.price)
-					])
-				])
 		)
+		.map(([outcome, selections]): Outcome => ({
+			...outcome,
+			selected: selections.map(s => s.id).indexOf(outcome.id) > -1,
+		}))
+		.map(renderOutcome)
 
 	return {
 		DOM: vdom$,
