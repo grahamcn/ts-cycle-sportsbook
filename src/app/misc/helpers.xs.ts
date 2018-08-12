@@ -1,6 +1,7 @@
 import xs, { Stream } from 'xstream'
-import { VNode } from '../../../node_modules/@cycle/dom';
-import { CatalogComponentSinks } from '../sportsbook/interfaces';
+import { VNode } from '@cycle/dom'
+
+import { CatalogComponentSinks } from '../sportsbook/interfaces'
 
 // when the stream returns an error, replace an error on the stream with a non erroneous stream (ie don't kill the stream),
 // with an error property on it to identify

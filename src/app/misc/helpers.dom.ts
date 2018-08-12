@@ -1,5 +1,6 @@
-import { MenuLink } from '../menus/interfaces'
 import { li, a, VNode, div, ul, h2, h3, p, span, h1 } from '@cycle/dom'
+
+import { MenuLink } from '../menus/interfaces'
 import { Selection, Outcome, Event, Competition, Market } from '../sportsbook/interfaces'
 
 export function renderListItem(dom: VNode): VNode {

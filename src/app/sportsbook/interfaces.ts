@@ -1,6 +1,6 @@
 import { VNode } from '@cycle/dom'
 import { Stream } from 'xstream'
-import { Reducer } from '../../../node_modules/cycle-onionify';
+import { Reducer } from 'cycle-onionify'
 
 export interface Catalog {
 	competitions: Map<string, Competition>
