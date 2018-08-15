@@ -5,7 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Event, Selection } from '../interfaces'
 import MarketComponent, { Sinks as MarketComponentSinks } from './market'
 import { renderEvent } from '../../misc/helpers.dom'
-import { transformArrayOfStreamsToStreamOfArrays, transformCatCompSinksToArrayOfStreamsOfVdoms } from '../../misc/helpers.xs';
+import { transformArrayOfStreamsToStreamOfArrays, transformCatCompSinksToArrayOfStreamsOfVdoms } from '../../misc/helpers.xs'
 
 export interface State extends Array<Selection> {}
 

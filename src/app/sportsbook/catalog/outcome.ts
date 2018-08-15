@@ -23,15 +23,20 @@ function OutcomeComponent(sources: Sources): Sinks {
 	const outcome$ = sources.outcome$
 	const liveData$ = sources.LiveData
 
+	// live outcome is a reduction (fold in xs) on the outcome with the live update data.
+	// we 'start with' outcome such that we don't have to wait for a live data update to arrive
+	// for this stream to emit.
+	// we flatten as we map each outcome stream value (which only emits once) to a stream emitting many
+	// liveOutcomes (from the reduction), starting with the original outcome.
 	const liveOutcome$: Stream<Outcome> =
 		outcome$
 			.map(outcome =>
 				liveData$
-					.fold((acc, curr) => ({
-						...acc,
-						price: parseFloat(curr.outcome.price),
-						priceChangeUp: acc.price < parseFloat(curr.outcome.price),
-						priceChangeDown: acc.price > parseFloat(curr.outcome.price)
+					.fold((liveOutcome, liveData) => ({
+						...liveOutcome,
+						price: parseFloat(liveData.outcome.price),
+						priceChangeUp: liveOutcome.price < parseFloat(liveData.outcome.price),
+						priceChangeDown: liveOutcome.price > parseFloat(liveData.outcome.price)
 					}), outcome)
 					.startWith(outcome)
 			)

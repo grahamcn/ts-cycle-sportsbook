@@ -14,7 +14,7 @@ import { simpleHttpResponseReplaceError } from '../../misc/helpers.xs'
 import { dropRepeats } from '../../misc/xstream.extra'
 import { Catalog, Selection } from '../interfaces'
 import Sport from './sport'
-import { renderCatalog, renderLoading, renderDataError } from '../../misc/helpers.dom';
+import { renderCatalog, renderLoading, renderDataError } from '../../misc/helpers.dom'
 
 interface State extends Array<Selection> { }
 
@@ -70,7 +70,7 @@ function Catalog(sources: Sources): Sinks {
 			.map(res => res.body)
 
 	// filter the catalog data http responses such that we only have the successful responses.
-	// flattenPageData transforms the data from given to flat - should be unecessary.
+	// fixPageData would be unecessary with mid tier work.
 	const successfulCatalogDataResponse$ =
 		catalogDataResponse$
 			.filter(data => !data.err)
@@ -110,7 +110,7 @@ function Catalog(sources: Sources): Sinks {
 
 
 	// **************************************************
-	// Reducers - start with undefined as catalog state
+	// Reducers - start with an empty array of state provided by parent on init
 	const defaultReducer$: Stream<Reducer<State>> =
 		xs.of(function defaultReducer(prev: State): State {
 			if (typeof prev === 'undefined') {
@@ -120,16 +120,16 @@ function Catalog(sources: Sources): Sinks {
 			}
 		})
 
-	const addToSelectionsReducer$: Stream<Reducer<State>> =
+	const addOutcomeToSelectionsReducer$: Stream<Reducer<State>> =
 		sources.DOM.select('.outcome').events('click')
 			.map((e: any) => e.ownerTarget)
 			.map((t: any) => JSON.parse(t.dataset.dataOutcome))
 			.map(selection =>
-				function addOneItemReducer(prev: State): State {
+				function addOutcomeToSelectionsReducer(prev: State): State {
 					return [...prev, Object.assign(selection, {
 						// we are copyiing an outcome from the dom to the state.
-						// as they outcome in the dom will have a price change property if it has been updated, we don't want to take it to
-						// the selections (as it'll force an animate)
+						// as they outcome in the dom will have a price change property if it has been updated, we don't want to
+						// take it to the selections (as it'll force an animate)
 						priceChangeUp: undefined,
 						priceChangeDown: undefined, // ditto
 					})]
@@ -147,15 +147,14 @@ function Catalog(sources: Sources): Sinks {
 			)
 
 	const catalogReducer$: Stream<Reducer<State>> =
-		xs.merge(defaultReducer$, addToSelectionsReducer$, removeSelectionReducer$)
-
+		xs.merge(defaultReducer$, addOutcomeToSelectionsReducer$, removeSelectionReducer$)
 	// end Reducers
 	// **************************************************
 
 	// merge our dom streams - success, loading, error
 	const vdom$: Stream<VNode> =
 		xs.merge( // will emit the most recent from these streams
-			successPageDom$, // stream  of competition doms
+			successPageDom$, // stream  of sport doms
 			loadingDom$, // stream of 'loading...'
 			errorPageDom$, // stream of loading errors
 		).map(renderCatalog)

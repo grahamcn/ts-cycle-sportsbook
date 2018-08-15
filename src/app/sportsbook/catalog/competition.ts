@@ -5,7 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Competition, Selection } from '../interfaces'
 import EventComponent, { Sinks as EventComponentSinks } from './event'
 import { renderCompetition } from '../../misc/helpers.dom'
-import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs';
+import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs'
 import { competitionEvents } from '../../misc/helpers.data'
 
 interface State extends Array<Selection> { }

@@ -6,8 +6,8 @@ import { Competition } from '../interfaces'
 import { Selection } from '../interfaces'
 import CompetitionComponent, { Sinks as CompetitionComponentSinks } from './competition'
 import { renderSport } from '../../misc/helpers.dom'
-import { transformArrayOfStreamsToStreamOfArrays, transformCatCompSinksToArrayOfStreamsOfVdoms } from '../../misc/helpers.xs';
-import { competitionEvents } from '../../misc/helpers.data';
+import { transformArrayOfStreamsToStreamOfArrays, transformCatCompSinksToArrayOfStreamsOfVdoms } from '../../misc/helpers.xs'
+import { competitionEvents } from '../../misc/helpers.data'
 
 export interface State extends Array<Selection> { }
 

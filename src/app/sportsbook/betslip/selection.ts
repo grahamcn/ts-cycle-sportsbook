@@ -1,4 +1,4 @@
-import xs, { Stream } from 'xstream'
+import { Stream } from 'xstream'
 import { DOMSource, VNode } from '@cycle/dom'
 import { StateSource, Reducer } from 'cycle-onionify'
 
@@ -27,14 +27,14 @@ function SelectionCompenent(sources: Sources): Sinks {
 				return undefined
 			})
 
-	const reducer$: Stream<Reducer<State>> = deleteReducer$
+	const selectionReducer$: Stream<Reducer<State>> = deleteReducer$
 
 	const vdom$: Stream<VNode> =
 		state$.map(renderSelection)
 
 	return {
 		DOM: vdom$,
-		onion: reducer$,
+		onion: selectionReducer$,
 	}
 }
 

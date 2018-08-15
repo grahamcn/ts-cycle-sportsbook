@@ -3,7 +3,7 @@ import xs, { Stream } from 'xstream'
 import { StateSource, makeCollection, Reducer } from 'cycle-onionify'
 
 import { Selection } from '../interfaces'
-import SelectionComponent from '../catalog/selection'
+import SelectionComponent from './selection'
 import { renderBetslip } from '../../misc/helpers.dom'
 
 interface State extends Array<Selection> {}

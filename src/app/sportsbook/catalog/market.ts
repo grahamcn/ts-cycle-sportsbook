@@ -5,7 +5,7 @@ import { StateSource } from 'cycle-onionify'
 import { Selection, Market } from '../interfaces'
 import OutcomeComponent, { Sinks as OutcomeComponentSinks } from './outcome'
 import { renderMarket } from '../../misc/helpers.dom'
-import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs';
+import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs'
 
 export interface State extends Array<Selection> {}
 
@@ -24,7 +24,8 @@ function MarketComponent(sources: Sources): Sinks {
 	const market$ = sources.market$
 	const liveData$ = sources.LiveData
 
-	// create a lens such that the outcome gets a selected status
+	// create a lens such that the outcome gets a selected status?
+
 	const outcomeComponentSinks$: Stream<OutcomeComponentSinks[]> =
 		market$
 			.map(market =>
