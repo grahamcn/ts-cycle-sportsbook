@@ -5,7 +5,10 @@ import { StateSource } from 'cycle-onionify'
 import { Competition, Selection } from '../interfaces'
 import EventComponent, { Sinks as EventComponentSinks } from './event'
 import { renderCompetition } from '../../misc/helpers.dom'
-import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs'
+import {
+	transformCatCompSinksToArrayOfStreamsOfVdoms,
+	transformArrayOfStreamsToStreamOfArrays,
+} from '../../misc/helpers.xs'
 import { competitionEvents } from '../../misc/helpers.data'
 
 interface State extends Array<Selection> { }
@@ -42,9 +45,9 @@ function CompetitionComponent(sources: Sources): Sinks {
 									competitioUrlName: competition.urlName
 								})
 							),
-							LiveData: liveData$.filter((d: any) => {
-								return d && d.outcome.eventId === event.id
-							}),
+							LiveData: liveData$.filter((d: any) =>
+								d && d.outcome.eventId === event.id
+							),
 						})
 					)
 			)

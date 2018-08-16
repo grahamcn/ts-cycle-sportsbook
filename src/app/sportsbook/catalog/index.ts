@@ -14,7 +14,11 @@ import { simpleHttpResponseReplaceError } from '../../misc/helpers.xs'
 import { dropRepeats } from '../../misc/xstream.extra'
 import { Catalog, Selection } from '../interfaces'
 import Sport from './sport'
-import { renderCatalog, renderLoading, renderDataError } from '../../misc/helpers.dom'
+import {
+	renderCatalog,
+	renderLoading,
+	renderDataError,
+} from '../../misc/helpers.dom'
 
 interface State extends Array<Selection> { }
 
@@ -147,7 +151,11 @@ function Catalog(sources: Sources): Sinks {
 			)
 
 	const catalogReducer$: Stream<Reducer<State>> =
-		xs.merge(defaultReducer$, addOutcomeToSelectionsReducer$, removeSelectionReducer$)
+		xs.merge(
+			defaultReducer$,
+			addOutcomeToSelectionsReducer$,
+			removeSelectionReducer$,
+		)
 	// end Reducers
 	// **************************************************
 

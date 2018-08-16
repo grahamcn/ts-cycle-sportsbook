@@ -48,7 +48,7 @@ function Sportsbook(sources: Sources): Sinks {
 	// deletions from list
 	const betslipOnion$: Stream<Reducer<State>> = betslipSinks.onion
 
-	// the catalog makes http requests. pass these to out sinks.
+	// the catalog makes http requests. pass these up through our sinks.
 	const sportsbookHttp$ = catalogSinks.HTTP
 
 	const vdom$: Stream<VNode> =
@@ -57,11 +57,13 @@ function Sportsbook(sources: Sources): Sinks {
 			betslipDom$,
 		).map(renderSportsbook)
 
-	// State
+	// State - this reducer can be refactored out, used in multiple places that share this state.
 	const defaultReducer$: Stream<Reducer<State>> =
-		xs.of(function () {
-			return {
-				selections: [],
+		xs.of(function defaultReducer(prev) {
+			if (typeof prev === 'undefined') {
+				return []
+			} else {
+				return prev
 			}
 		})
 

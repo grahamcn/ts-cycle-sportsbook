@@ -17,8 +17,6 @@ export function makeSocketDriver(socketUrl) {
 				})
 
 				socket.emit('liveSportsConfig', {
-					event: 2000,
-					market: 1000,
 					outcome: 1000,
 				})
 			},

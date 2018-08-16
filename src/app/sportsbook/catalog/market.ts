@@ -5,9 +5,12 @@ import { StateSource } from 'cycle-onionify'
 import { Selection, Market } from '../interfaces'
 import OutcomeComponent, { Sinks as OutcomeComponentSinks } from './outcome'
 import { renderMarket } from '../../misc/helpers.dom'
-import { transformCatCompSinksToArrayOfStreamsOfVdoms, transformArrayOfStreamsToStreamOfArrays } from '../../misc/helpers.xs'
+import {
+	transformCatCompSinksToArrayOfStreamsOfVdoms,
+	transformArrayOfStreamsToStreamOfArrays,
+} from '../../misc/helpers.xs'
 
-export interface State extends Array<Selection> {}
+export interface State extends Array<Selection> { }
 
 export interface Sinks {
 	DOM: Stream<VNode>,
