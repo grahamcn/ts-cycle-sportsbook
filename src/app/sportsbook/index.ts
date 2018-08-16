@@ -61,7 +61,9 @@ function Sportsbook(sources: Sources): Sinks {
 	const defaultReducer$: Stream<Reducer<State>> =
 		xs.of(function defaultReducer(prev) {
 			if (typeof prev === 'undefined') {
-				return []
+				return {
+					selections: []
+				}
 			} else {
 				return prev
 			}
