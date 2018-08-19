@@ -52,12 +52,7 @@ function MenuGroup(sources: Sources): Sinks {
 			close$,
 		).startWith(closedState)
 
-	const menuLens = {
-		get: (state: State) => ({
-			items: state.items
-		})
-	}
-	const Menu = isolate(MenuComponent, {onion: menuLens})(sources)
+	const Menu = isolate(MenuComponent, 'items')(sources)
 	const menuDom$: Stream<VNode> = Menu.DOM
 	const menuHistory$: Stream<string> = Menu.History
 

@@ -8,7 +8,6 @@ export function renderListItem(dom: VNode): VNode {
 }
 
 export function renderDataError(err?: string): VNode {
-	debugger
 	return div('.error', err  || 'error loading dynamic data')
 }
 
@@ -27,16 +26,17 @@ export function renderMenu([title, menuItemListDom]: [string, VNode[]]): VNode {
 
 export function renderMenuGroup([title, groupState, menuDom]) {
 	return li('.listItem', [
-	div(groupState.classes.join(' '), [
-		title,
-		span(groupState.arrow)
-	]),
-	!groupState.open ? undefined :
-		ul('.list', [
-			menuDom,
-		])
-])
+		div(groupState.classes.join(' '), [
+			title,
+			span(groupState.arrow)
+		]),
+		!groupState.open ? undefined :
+			ul('.list', [
+				menuDom,
+			])
+	])
 }
+
 export function renderMenuLink(item: MenuLink): VNode {
 	return renderListItem(renderLink(item.url, item.title))
 }
@@ -65,19 +65,19 @@ export function renderSelection(selection: Selection): VNode {
 			priceChange: selection.priceChangeUp || selection.priceChangeDown,
 		},
 	}, [
-			div('.selection__price', [
-				div('.price', {
-				},
-					selection.price,
-				),
-			]),
-			div('.selection__details', [
-				div('.selection__outcome', selection.name),
-				div('.selection__market', selection.marketName),
-				div('.selection__startTime', 'time'),
-			]),
-			div('.selection__remove', 'x')
-		])
+		div('.selection__price', [
+			div('.price', {
+			},
+				selection.price,
+			),
+		]),
+		div('.selection__details', [
+			div('.selection__outcome', selection.name),
+			div('.selection__market', selection.marketName),
+			div('.selection__startTime', 'time'),
+		]),
+		div('.selection__remove', 'x')
+	])
 }
 
 export function renderOutcome(outcome: Outcome): VNode {
@@ -193,5 +193,5 @@ export function renderApp([secondaryMenuDom, tertiaryMenuDom, sportsbookDom]) {
 			tertiaryMenuDom,
 			sportsbookDom,
 		])
-])
+	])
 }
